@@ -25,13 +25,17 @@ class RetrieverService:
 
         # 1. Dense vector search
         query_vec = await run_in_threadpool(self.embedder.embed_query, query)
-        vector_candidates = await vector_search(
-            pool=pool,
-            query_vector=query_vec,
-            release_filter=release_filter,
-            spec_filter=spec_filter,
-            top_k=40
-        )
+        
+        if query_vec:
+            vector_candidates = await vector_search(
+                pool=pool,
+                query_vector=query_vec,
+                release_filter=release_filter,
+                spec_filter=spec_filter,
+                top_k=40
+            )
+        else:
+            vector_candidates = []
 
         # 2. Lexical search
         lexical_candidates = await lexical_search(

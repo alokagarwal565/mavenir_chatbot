@@ -25,6 +25,11 @@ class BGEEmbeddingProvider:
         return self._model
 
     def embed_query(self, text: str) -> List[float]:
+        import os
+        if os.environ.get("RENDER"):
+            logger.info("skipping_embeddings_on_render_free_tier_to_prevent_oom")
+            return []
+
         model = self._get_model()
         if model is not None:
             try:
@@ -68,6 +73,11 @@ class BGEReranker:
     def rerank(self, query: str, candidates: List[ScoredChunk], top_k: int = 8) -> List[ScoredChunk]:
         if not candidates:
             return []
+        
+        import os
+        if os.environ.get("RENDER"):
+            logger.info("skipping_reranker_on_render_free_tier_to_prevent_oom")
+            return candidates[:top_k]
         
         model = self._get_model()
         if model is not None:
