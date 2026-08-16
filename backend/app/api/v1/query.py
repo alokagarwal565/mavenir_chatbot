@@ -74,8 +74,6 @@ async def query_stream(req: StreamQueryRequest, request: Request):
                 release_filter=req.release_filter,
                 request_id=req_id
             ):
-                if await request.is_disconnected():
-                    break
                 yield f"event: {event.type}\ndata: {json.dumps(event.data)}\n\n"
         except asyncio.CancelledError:
             pass  # client disconnected — normal
