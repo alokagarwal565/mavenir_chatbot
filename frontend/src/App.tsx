@@ -22,15 +22,15 @@ const DOMAIN_STARTERS = [
     prompt: 'What is the default value of periodic registration timer T3512 in TS 24.501?'
   },
   {
-    icon: '🛡️',
-    title: 'Security & 5G-AKA',
-    desc: 'TS 33.501 & TS 33.535 SUCI de-concealment, AUSF & AKMA',
-    prompt: 'Explain 5G-AKA primary authentication and SUCI concealing per TS 33.501'
+    icon: '⚖️',
+    title: 'Policy & Charging',
+    desc: 'TS 23.503 Policy and Charging Control Framework for 5GS',
+    prompt: 'What are the main functions of the PCF defined in TS 23.503?'
   },
   {
     icon: '🌐',
     title: 'Service Based APIs',
-    desc: 'TS 29.500 & TS 29.518 Namf, Nsmf, Nudm REST HTTP/2 JSON',
+    desc: 'TS 29.502 & TS 29.518 Namf, Nsmf REST HTTP/2 JSON APIs',
     prompt: 'What HTTP status codes are returned by Namf_Communication in TS 29.518?'
   }
 ];
