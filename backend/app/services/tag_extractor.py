@@ -3,11 +3,7 @@ import sys
 from pathlib import Path
 from typing import List, Dict, Any, Set
 
-root_dir = str(Path(__file__).resolve().parents[3])
-if root_dir not in sys.path:
-    sys.path.insert(0, root_dir)
-
-from ingestion.tagger import NF_VOCAB, PROC_VOCAB, IFACE_VOCAB, PROTO_VOCAB
+from app.models.vocab import NF_VOCAB, PROC_VOCAB, IFACE_VOCAB, PROTO_VOCAB
 
 class QueryTagExtractor:
     @staticmethod

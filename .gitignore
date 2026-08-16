@@ -53,6 +53,7 @@ data/storage/*
 
 # Logs and Scratch
 logs.txt
+deploy.txt
 scratch/
 
 # Agent and specific caches
