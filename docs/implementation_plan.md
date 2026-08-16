@@ -1,8 +1,9 @@
-# 3GPP Standards Intelligence Assistant — Implementation Plan
+# 3GPP Standards Intelligence Assistant & Knowledge Pipeline — Master Implementation Plan
 
-> **Version:** 1.7 · **Date:** 2026-08-15 · **Author:** Planning Agent (v1.7: Gemini 3.x Model Matrix & 3-Key Provider Rotation Cascade updated)
-> **Assignment:** Mavenir Graduate Engineer Trainee (GET) Take-Home
-> **Repository:** `D:\Academic\mavenir_chatbot` (observed empty at plan time — contains only `.agents/`, `.claude/`, `prompt.txt`)
+> **Document Version:** 3.0.0 (Unified Master Blueprint & Complete Implementation Plan)  
+> **Target Scope:** Production 3GPP Standards Knowledge Engine (Curated 5GS Horizon 1 + 55-Series Enterprise Scaling)  
+> **Status:** Approved Master Implementation Blueprint  
+> **Architecture:** All-in-PostgreSQL Hybrid Architecture ($0/mo Free Tier on Supabase/Neon + Render Backend)
 
 ---
 
@@ -19,30 +20,38 @@
 9. [Component Architecture](#9-component-architecture)
 10. [Repository / Module Architecture](#10-repository--module-architecture)
 11. [Database Design](#11-database-design)
+    - [11.5 Complete Enterprise PostgreSQL DDL Schema (Catalog, Structure, Embeddings, Taxonomy)](#115-complete-enterprise-postgresql-ddl-schema-catalog-structure-embeddings-taxonomy) *(Merged Master Blueprint)*
 12. [API Design](#12-api-design)
-13. [**Streaming Responses & Ephemeral Conversation Context**](#35-streaming-responses--ephemeral-conversation-context) ← v1.8
+13. [Streaming Responses & Ephemeral Conversation Context](#35-streaming-responses--ephemeral-conversation-context)
 14. [3GPP Document Strategy](#13-3gpp-document-strategy)
+    - [13.5 Complete 3GPP 55-Series Standards Corpus & Multi-Horizon Strategy](#135-complete-3gpp-55-series-standards-corpus--multi-horizon-strategy) *(Merged Master Blueprint)*
 15. [Ingestion Architecture](#14-ingestion-architecture)
+    - [14.5 High-Fidelity Multi-Modal Parsing & Canonical AST Pipeline](#145-high-fidelity-multi-modal-parsing--canonical-ast-pipeline) *(Merged Master Blueprint)*
+    - [14.6 Asynchronous Ingestion Job Engine & Continuous Corpus Updates](#146-asynchronous-ingestion-job-engine--continuous-corpus-updates) *(Merged Master Blueprint)*
 16. [RAG Architecture](#15-rag-architecture)
 17. [Retrieval Strategy](#16-retrieval-strategy)
 18. [Reranking Strategy](#17-reranking-strategy)
 19. [Hallucination Prevention](#18-hallucination-prevention)
 20. [Citation and Evidence Architecture](#19-citation-and-evidence-architecture)
+    - [19.5 Cross-Reference & Normative Knowledge Graph Strategy](#195-cross-reference--normative-knowledge-graph-strategy) *(Merged Master Blueprint)*
 21. [Confidence and Abstention](#20-confidence-and-abstention)
+    - [20.5 Dual-Tier Embedding & Reranking Specification Matrices](#205-dual-tier-embedding--reranking-specification-matrices) *(Merged Master Blueprint)*
 22. [Prompt Architecture](#21-prompt-architecture)
 23. [Evaluation Architecture](#22-evaluation-architecture)
 24. [Security](#23-security)
 25. [Error Handling](#24-error-handling)
 26. [Retry Strategy](#25-retry-strategy)
 27. [Logging and Observability](#26-logging-and-observability)
+    - [26.5 Multi-Horizon Enterprise Scalability & Capacity Matrix](#265-multi-horizon-enterprise-scalability--capacity-matrix) *(Merged Master Blueprint)*
 28. [Testing Strategy](#27-testing-strategy)
 29. [Deployment Architecture](#28-deployment-architecture)
-30. [Incremental Implementation Roadmap](#29-incremental-implementation-roadmap)
+30. [Incremental Implementation Roadmap (Phases 0–11)](#29-incremental-implementation-roadmap)
 31. [Risks and Mitigations](#30-risks-and-mitigations)
 32. [Interview Defensibility](#31-interview-defensibility)
 33. [Inherited Engineering Contracts](#32-inherited-engineering-contracts)
-34. [AI Coding Agent Execution Plan](#33-ai-coding-agent-execution-plan)
+34. [AI Coding Agent Execution Plan & Task Cards (TASK-P0-01 to TASK-P11-04)](#33-ai-coding-agent-execution-plan)
 35. [Master Implementation Tracker](#34-master-implementation-tracker)
+36. [Production Deployment Hardening (OOM & PostgreSQL FTS)](#36-production-deployment-hardening-oom--postgresql-fts)
 
 ---
 
@@ -621,6 +630,222 @@ For the initial 5 specifications (Release 18), estimated chunk count: ~20,000-60
 - Schema initialization via `schema.sql`; no migration framework needed at this scale.
 
 ---
+
+
+---
+
+## 11.5 Complete Enterprise PostgreSQL DDL Schema (Catalog, Structure, Embeddings, Taxonomy)
+*(Integrated from Standards Knowledge Pipeline Master Blueprint)*
+
+### 11.5.1 Relational Domain Partitioning & Complete DDL
+
+The target schema partitions data into 4 distinct domains:
+1. **Catalog Domain:** `spec_series`, `specifications`, `spec_releases`, `spec_versions`.
+2. **Structure Domain:** `canonical_documents`, `doc_sections`, `doc_tables`, `doc_figures`, `doc_references`.
+3. **Chunk & Vector Domain:** `document_chunks`, `chunk_embeddings` (multi-model vectors).
+4. **Taxonomy & Ingestion Domain:** `taxonomy_tags`, `ingestion_jobs`, `ingestion_stage_logs`.
+
+### Full PostgreSQL DDL Schema
+
+```sql
+-- Enable Extensions
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+-- ============================================================================
+-- 1. CATALOG DOMAIN
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS spec_series (
+    series_number   VARCHAR(10) PRIMARY KEY, -- e.g., '23', '24', '38'
+    title           TEXT NOT NULL,
+    description     TEXT,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS specifications (
+    spec_number     VARCHAR(20) PRIMARY KEY, -- e.g., 'TS 23.501'
+    series_number   VARCHAR(10) NOT NULL REFERENCES spec_series(series_number),
+    spec_type       VARCHAR(5) NOT NULL CHECK (spec_type IN ('TS', 'TR')),
+    title           TEXT NOT NULL,
+    primary_wg      VARCHAR(20),             -- e.g., 'SA2', 'CT1', 'RAN2'
+    status          VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'withdrawn', 'draft')),
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS spec_releases (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    spec_number     VARCHAR(20) NOT NULL REFERENCES specifications(spec_number) ON DELETE CASCADE,
+    release_number  INTEGER NOT NULL,        -- e.g., 15, 16, 17, 18, 19
+    is_frozen       BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (spec_number, release_number)
+);
+
+CREATE TABLE IF NOT EXISTS spec_versions (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    spec_release_id     UUID NOT NULL REFERENCES spec_releases(id) ON DELETE CASCADE,
+    version_string      VARCHAR(20) NOT NULL, -- e.g., '18.6.0'
+    version_letter_code VARCHAR(10) NOT NULL, -- e.g., 'i60'
+    publication_date    DATE,
+    source_url          TEXT NOT NULL,
+    checksum_sha256     VARCHAR(64) NOT NULL,
+    storage_path_raw    TEXT NOT NULL,
+    is_latest_in_rel    BOOLEAN NOT NULL DEFAULT FALSE,
+    is_latest_global    BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (spec_release_id, version_string),
+    UNIQUE (checksum_sha256)
+);
+
+-- ============================================================================
+-- 2. STRUCTURE & MULTI-MODAL CONTENT DOMAIN
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS canonical_documents (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    spec_version_id     UUID NOT NULL REFERENCES spec_versions(id) ON DELETE CASCADE,
+    page_count          INTEGER NOT NULL,
+    word_count          INTEGER NOT NULL,
+    storage_path_ast    TEXT NOT NULL,        -- Path to parsed JSON AST representation
+    parsed_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    parser_version      VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS doc_sections (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id         UUID NOT NULL REFERENCES canonical_documents(id) ON DELETE CASCADE,
+    section_number      TEXT NOT NULL,        -- e.g., '4.2.2.2.1'
+    section_title       TEXT NOT NULL,
+    parent_section      TEXT,                 -- e.g., '4.2.2.2'
+    depth_level         INTEGER NOT NULL,     -- e.g., 5
+    page_start          INTEGER NOT NULL,
+    page_end            INTEGER NOT NULL,
+    raw_markdown        TEXT NOT NULL,
+    has_normative_rules BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS doc_tables (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id         UUID NOT NULL REFERENCES canonical_documents(id) ON DELETE CASCADE,
+    section_id          UUID REFERENCES doc_sections(id) ON DELETE CASCADE,
+    table_number        TEXT,                 -- e.g., 'Table 5.2.2.2-1'
+    table_title         TEXT,
+    header_json         JSONB NOT NULL,
+    rows_json           JSONB NOT NULL,
+    markdown_repr       TEXT NOT NULL,
+    page_number         INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS doc_figures (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id         UUID NOT NULL REFERENCES canonical_documents(id) ON DELETE CASCADE,
+    section_id          UUID REFERENCES doc_sections(id) ON DELETE CASCADE,
+    figure_number       TEXT,                 -- e.g., 'Figure 4.2.2.2.2-1'
+    figure_title        TEXT,                 -- e.g., 'Initial Registration Procedure'
+    figure_type         VARCHAR(30) NOT NULL, -- 'CALL_FLOW', 'BLOCK_DIAGRAM', 'STATE_CHART'
+    raw_image_path      TEXT,
+    mermaid_syntax      TEXT,                 -- Executable Mermaid sequenceDiagram representation
+    extracted_text      TEXT NOT NULL,        -- Textual message sequence for FTS/Vector search
+    page_number         INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS doc_references (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    source_doc_id       UUID NOT NULL REFERENCES canonical_documents(id) ON DELETE CASCADE,
+    source_section_id   UUID REFERENCES doc_sections(id) ON DELETE CASCADE,
+    target_spec_number  VARCHAR(20) NOT NULL, -- e.g., '3GPP TS 24.501'
+    target_clause       TEXT,                 -- e.g., 'Clause 5.4.1'
+    reference_text      TEXT NOT NULL,
+    is_normative        BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+-- ============================================================================
+-- 3. CHUNKS & MULTI-MODEL EMBEDDINGS DOMAIN
+-- ============================================================================
+
+-- All-in-PostgreSQL Schema (Text, Embeddings, FTS, and Tags in PostgreSQL)
+CREATE TABLE IF NOT EXISTS document_chunks (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id         UUID NOT NULL REFERENCES canonical_documents(id) ON DELETE CASCADE,
+    section_id          UUID REFERENCES doc_sections(id) ON DELETE SET NULL,
+    chunk_index         INTEGER NOT NULL,
+    spec_number         VARCHAR(20) NOT NULL,
+    release_number      INTEGER NOT NULL,
+    version_string      VARCHAR(20) NOT NULL,
+    section_number      TEXT,
+    section_title       TEXT,
+    page_start          INTEGER NOT NULL,
+    page_end            INTEGER NOT NULL,
+    text                TEXT NOT NULL,        -- Complete Markdown chunk text stored in PostgreSQL
+    token_count         INTEGER NOT NULL,
+    fts_vector          TSVECTOR,             -- Full-Text Search vector
+    tags                TEXT[] DEFAULT '{}',  -- 7-layer taxonomy tags
+    is_active           BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (document_id, chunk_index)
+);
+
+CREATE TABLE IF NOT EXISTS chunk_embeddings (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    chunk_id            UUID NOT NULL REFERENCES document_chunks(id) ON DELETE CASCADE,
+    model_name          VARCHAR(100) NOT NULL, -- e.g., 'BAAI/bge-m3'
+    model_version       VARCHAR(50) NOT NULL,  -- e.g., 'v1.0'
+    dimension           INTEGER NOT NULL,      -- e.g., 1024
+    embedding           VECTOR(1024) NOT NULL,
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (chunk_id, model_name, model_version)
+);
+
+-- ============================================================================
+-- 4. TAXONOMY & INGESTION STAGE MACHINES
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS taxonomy_tags (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tag_name            VARCHAR(100) UNIQUE NOT NULL, -- e.g., 'nf:amf', 'proc:registration'
+    layer_level         INTEGER NOT NULL,             -- 0 through 6
+    parent_tag_id       UUID REFERENCES taxonomy_tags(id),
+    display_label       TEXT NOT NULL,
+    description         TEXT,
+    synonyms            TEXT[] DEFAULT '{}',
+    regex_pattern       TEXT,
+    is_active           BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE IF NOT EXISTS ingestion_jobs (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    spec_version_id     UUID REFERENCES spec_versions(id) ON DELETE SET NULL,
+    job_type            VARCHAR(50) NOT NULL, -- 'FULL_INGEST', 'RE_EMBED', 'RE_PARSE'
+    status              VARCHAR(30) NOT NULL DEFAULT 'PENDING'
+                        CHECK (status IN ('PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'RETRYING')),
+    stage_current       VARCHAR(30) NOT NULL DEFAULT 'DISCOVER',
+    retry_count         INTEGER NOT NULL DEFAULT 0,
+    max_retries         INTEGER NOT NULL DEFAULT 3,
+    error_message       TEXT,
+    stage_latencies_ms  JSONB DEFAULT '{}',
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    completed_at        TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS ingestion_stage_logs (
+    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    job_id              UUID NOT NULL REFERENCES ingestion_jobs(id) ON DELETE CASCADE,
+    stage_name          VARCHAR(30) NOT NULL,
+    status              VARCHAR(20) NOT NULL,
+    duration_ms         INTEGER NOT NULL,
+    items_processed     INTEGER DEFAULT 0,
+    details             JSONB DEFAULT '{}',
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+```
+
+---
+
+
 
 ## 12. API Design
 
@@ -1321,6 +1546,232 @@ Ingestion validation:
 - Too-large chunks (1000+ tokens): Lower retrieval precision — cosine similarity diluted
 
 ---
+
+
+---
+
+## 13.5 Complete 3GPP 55-Series Standards Corpus & Multi-Horizon Strategy
+*(Integrated from Standards Knowledge Pipeline Master Blueprint)*
+
+### 13.5.1 Corpus Strategy & Series Hierarchy
+
+The platform is designed to represent and maintain the **complete 3GPP standards body across all 55 specification series and all historical/active releases (Releases 1999 to 20)**:
+
+### 7.1 Complete 3GPP 55-Series Master Breakdown
+
+| Series Range | Technical Area & Responsibility | Key Working Groups | Representative Specifications | Historical & Active Scope |
+|---|---|---|---|---|
+| **Series 01–13** | GSM Phase 1 & Phase 2 (Legacy 2G Specifications) | SMG / CT | TS 04.08, TS 08.08, TS 03.60 | Historical Reference (Rel-99, Phase 2+) |
+| **Series 21–23** | System Architecture, Requirements & Technical Realization | SA1, SA2 | TS 22.261 (5G Requirements), **TS 23.501** (5GS Arch), **TS 23.502** (5GS Procedures), TS 23.503 (Policy/QoS), TS 23.401 (LTE EPC Arch) | Complete Core Architecture (Rel-15 to Rel-20) |
+| **Series 24** | Core Network Non-Access Stratum (NAS) & Signaling Protocols | CT1 | **TS 24.501** (5GMM/5GSM NAS), TS 24.502 (Non-3GPP Access), TS 24.526 (URSP), TS 24.301 (LTE NAS) | Complete Core Signaling (Rel-15 to Rel-20) |
+| **Series 25** | UTRA (UMTS 3G Radio Access Network & Protocols) | RAN1–RAN4 | TS 25.331 (UMTS RRC), TS 25.413 (RANAP), TS 25.211 | Historical 3G Architecture (Rel-99 to Rel-10) |
+| **Series 26** | Codecs, Speech, Audio, Video & Multimedia Telephony Services | SA4 | TS 26.114 (IMS Multimedia), TS 26.501 (5G Media Streaming), TS 26.071 (AMR Codec) | Media & Voice Processing (Rel-99 to Rel-19) |
+| **Series 27** | Terminal Adaptation, AT Command Set & Data Services | CT1 | TS 27.007 (AT Command Set for UE), TS 27.005 | Device & Modem Interfacing (Rel-99 to Rel-19) |
+| **Series 28** | Management, Orchestration, Slicing & Charging Architecture | SA5 | TS 28.530 (5G Slicing Concepts), TS 28.531 (Provisioning), TS 28.532 (Generic Management), TS 28.541 (NR NRM) | OAM & Network Management (Rel-15 to Rel-20) |
+| **Series 29** | Core Network Service-Based Interfaces (SBI) & Interworking | CT3, CT4 | **TS 29.500** (SBI Realization), **TS 29.518** (Namf), **TS 29.502** (Nsmf), **TS 29.503** (Nudm), **TS 29.510** (Nnrf), **TS 29.571** (Common Types), TS 29.274 (GTPv2-C) | Service Based Protocols & APIs (Rel-15 to Rel-20) |
+| **Series 31** | Universal Subscriber Identity Module (USIM) & UICC Protocols | CT6 | TS 31.102 (USIM Application), TS 31.121 (UICC Testing), TS 31.124 | Identity & Smart Card Security (Rel-99 to Rel-19) |
+| **Series 32** | Telecommunication Management, Charging Management & OAM | SA5 | TS 32.240 (Charging Arch), TS 32.291 (5G Charging SBI), TS 32.298 (CDR) | Revenue & Charging Systems (Rel-99 to Rel-19) |
+| **Series 33** | 3GPP Security Architecture, Cryptography & Privacy Protocols | SA3 | **TS 33.501** (5GS Security & 5G-AKA), TS 33.535 (AKMA), TS 33.541 (gNB Sec), TS 33.401 (LTE Security) | Complete Security Suite (Rel-99 to Rel-20) |
+| **Series 34** | User Equipment (UE) Conformance & Testing Specifications | RAN5 | TS 34.121, TS 34.229 (IMS Client Conformance) | Testing & Certification (Rel-99 to Rel-18) |
+| **Series 35** | Cryptographic Algorithm Specifications & Security Building Blocks | SA3 | TS 35.206 (MILENAGE Algorithm Set), TS 35.221 (TUAK Algorithm Set) | Cryptographic Primitives (Rel-99 to Rel-18) |
+| **Series 36** | E-UTRA (LTE / LTE-Advanced Radio Access Network & Protocols) | RAN1–RAN4 | TS 36.300 (LTE Overall), TS 36.331 (LTE RRC), TS 36.413 (S1AP), TS 36.423 (X2AP) | LTE & LTE-A Systems (Rel-8 to Rel-17) |
+| **Series 37** | Multiple Radio Access Technology (Multi-RAT) & Dual Connectivity | RAN2, RAN3 | TS 37.340 (Multi-RAT Dual Connectivity MR-DC), TS 37.324 (SDAP), TS 37.571 | Inter-RAT & Dual Connectivity (Rel-14 to Rel-19) |
+| **Series 38** | 5G NR (New Radio Access Network, Physical Layer & Protocols) | RAN1–RAN4 | **TS 38.300** (NR Overall), **TS 38.331** (NR RRC), **TS 38.401** (NG-RAN Arch), **TS 38.413** (NGAP), **TS 38.423** (XnAP), **TS 38.473** (F1AP) | Complete 5G NR Radio Stack (Rel-15 to Rel-20) |
+
+---
+
+### 7.2 Two-Horizon Phased Implementation Strategy
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                      HORIZON 1: PHASE 1 CURATED CORE 5GS (IMMEDIATE PRODUCTION)                 │
+│  - Scope: 44 Flagship Specifications across Releases 17 & 18 (Series 23, 24, 29, 33, 38)       │
+│  - Total Chunks: ~30,200 chunks | Total Database Size: ~270 MB                                  │
+│  - Infrastructure: 100% Free on Neon PostgreSQL (0.5 GB Cap) + Render Backend ($0/month)        │
+├─────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                      HORIZON 2: COMPLETE 55-SERIES HISTORICAL CORPUS (ENTERPRISE EXPANSION)     │
+│  - Scope: All 4,500+ Specifications across Releases 1999 to 20 (All 55 Series)                  │
+│  - Total Chunks: ~1,200,000 chunks | Total Database Size: ~11.5 GB                              │
+│  - Infrastructure: Scaled PostgreSQL on Neon standard tier (~$1.90/mo storage)                  │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+
+
+### 13.5.2 Automated Source Discovery Strategy
+
+The automated discovery engine (`ingestion/discovery.py`) queries the official 3GPP archive (`https://www.3gpp.org/ftp/Specs/archive/`):
+1. Traverses series directories.
+2. Parses filenames (e.g. `23501-i60.zip`).
+3. Decodes release and version numbers:
+   $$\text{Release} = \text{ord}(\text{letter}) - \text{ord}('a') + 10$$
+4. Compares SHA-256 against catalog.
+5. Emits `ingestion_jobs` for new or modified files.
+
+---
+
+
+
+### 13.5.3 Version & Release Management
+
+1. **Version Immutability:** Historical versions are never overwritten.
+2. **Latest Resolution:** Flags `is_latest_in_rel` (e.g. latest Rel-17) and `is_latest_global` (latest overall release).
+3. **Query-Time Intent Resolution:**
+   - "In Rel-17..." $\to$ filters `release_number = 17`.
+   - "What does TS 23.501 specify?" $\to$ filters `is_latest_global = TRUE`.
+   - "Compare Rel-17 and Rel-18..." $\to$ spawns parallel retrieval for both releases.
+
+---
+
+
+
+### 13.5.4 Immutable Raw Document Storage (CAS)
+
+Content-Addressable Storage (CAS) directory hierarchy:
+```
+data/storage/
+├── raw/
+│   ├── zips/{series}/{spec}-{version}_{sha256}.zip
+│   └── pdfs/{series}/{spec}-{version}_{sha256}.pdf
+├── parsed_ast/
+│   └── {series}/{spec}-{version}_{sha256}.ast.json
+└── checksums/
+    └── master_catalog.sha256
+```
+
+---
+
+
+
+---
+
+## 14.5 High-Fidelity Multi-Modal Parsing & Canonical AST Pipeline
+*(Integrated from Standards Knowledge Pipeline Master Blueprint)*
+
+### 14.5.1 Multi-Modal Parsing Architecture
+
+The ingestion pipeline employs a **100% free, CPU-friendly multi-modal parsing stack** tailored to 3GPP standards:
+
+```
+                            Input 3GPP Specification (.pdf)
+                                           │
+                                           ▼
+                           [Digital Text Stream Check]
+                                           │
+                 ┌─────────────────────────┴─────────────────────────┐
+                 ▼                                                   ▼
+    [Native Digital Vector PDF]                         [Scanned Legacy Archive PDF]
+         (98% of Corpus)                                     (2% Historical Archives)
+                 │                                                   │
+                 ▼                                                   ▼
+    [PyMuPDF4LLM + Docling Parser]                      [OCRmyPDF + RapidOCR Pre-Processor]
+    - Digital Unicode stream extraction                 - Lightweight CPU ONNX OCR
+    - Coordinate-based table grid parsing               - Sandwich searchable text layer
+    - 300+ pages/sec on standard CPU                    - Output fed to PyMuPDF4LLM
+                 │                                                   │
+                 └─────────────────────────┬─────────────────────────┘
+                                           │
+                 ┌─────────────────────────┴─────────────────────────┐
+                 ▼                                                   ▼
+    [Normative Text & Tables]                           [Figure & Diagram Extraction]
+    - Nested clause hierarchies                         - Vector Bounding Box text cropper
+    - Parameter/Timer Markdown tables                   - Gemini 3.6 Flash Vision (GEMINI_MODEL_HEAVY) (Free Tier)
+    - RFC-2119 keyword tagging                           converts call flows to Mermaid AST
+                 │                                                   │
+                 └─────────────────────────┬─────────────────────────┘
+                                           │
+                                           ▼
+                           [Canonical Document AST Output]
+```
+
+### Parsing Pipeline Sub-Components:
+
+1. **Digital Document Engine (PDF via PyMuPDF4LLM + DOCX via python‑docx):**
+   - Extracts character streams with exact byte-level Unicode fidelity (zero OCR hallucination on acronyms like `S-NSSAI`, `T3512`, `0x7F`).
+   - Reconstructs complex 3GPP multi-column tables, information element (IE) matrices, and ASN.1 structures into clean Markdown.
+
+2. **Scanned Archive Engine (OCRmyPDF + RapidOCR) – still for legacy scanned PDFs**
+   - **Cost:** **$0.00** (Runs on standard CPU via ONNX runtime).
+   - Detects image‑only pages in legacy PDFs (e.g., Rel‑99 / GSM Phase 1/2) and sandwiches an invisible, searchable digital text layer into the PDF, allowing downstream parsers to treat it identically to modern digital specifications.
+
+3. **Call Flow & Diagram Transcription Engine (Dual-Strategy):**
+   - **Strategy 1 (Vector Text Cropper):** In modern vector PDFs, call flow message labels (`Registration Request`, `N2 Message`) are vector text objects. `PyMuPDF` extracts text within figure bounding boxes sorted temporally $(y)$ and spatially $(x)$ with zero added latency.
+   - **Strategy 2 (Gemini 3.6 Flash Vision (GEMINI_MODEL_HEAVY) - Free Tier):** Complex architectural bitmaps and multi-party message sequence charts are transcribed into structured **Mermaid sequenceDiagrams** via the free-tier Gemini API (15 RPM / 1,500 RPD), embedding executable call flows directly into chunk context:
+     ```mermaid
+     sequenceDiagram
+       autonumber
+       actor UE
+       participant gNB
+       participant AMF
+       participant UDM
+       UE->>gNB: Registration Request (SUCI)
+       gNB->>AMF: N2 Message (Registration Request)
+       AMF->>UDM: Nudm_UECM_Registration
+     ```
+
+---
+
+### 14.5.2 Canonical Document AST Schema
+
+The parsed document is serialized as a Canonical JSON Abstract Syntax Tree:
+```json
+{
+  "spec_number": "TS 23.501",
+  "release": 18,
+  "version": "18.6.0",
+  "checksum_sha256": "e4d9f1a...",
+  "sections": [
+    {
+      "section_number": "4.2.2.2.1",
+      "section_title": "AMF Functionality",
+      "parent_section": "4.2.2.2",
+      "depth": 5,
+      "page_start": 45,
+      "page_end": 46,
+      "content": "The Access and Mobility Management Function...",
+      "has_normative_rules": true,
+      "tables": [],
+      "references": [
+        {"target_spec": "TS 24.501", "clause": "5.4.1", "is_normative": true}
+      ]
+    }
+  ]
+}
+```
+
+---
+
+
+
+---
+
+## 14.6 Asynchronous Ingestion Job Engine & Continuous Corpus Updates
+*(Integrated from Standards Knowledge Pipeline Master Blueprint)*
+
+### 14.6.1 Asynchronous Ingestion State Machine
+
+State machine with independent retryable stages:
+```
+DISCOVER ──► DOWNLOAD ──► VALIDATE ──► PARSE ──► STRUCTURE ──► TAG ──► CHUNK ──► EMBED ──► INDEX
+```
+- Each stage logs execution duration, status, and item counts to `ingestion_stage_logs`.
+- Failed jobs resume from the exact failed stage without repeating upstream work.
+
+---
+
+### 14.6.2 Continuous Polling & Update Strategy
+
+1. Nightly cron job checks 3GPP FTP archive for new `.zip` uploads.
+2. Identifies new version codes or modified checksums.
+3. Automatically triggers asynchronous ingestion jobs.
+4. Activates new versions atomically upon successful benchmark validation.
+
+---
+
+
+
 
 ## 15. RAG Architecture
 
@@ -2168,6 +2619,123 @@ The system deploys a **4-tier model matrix with a 3-key provider rotation pool**
 **Always log:** request_id, error code and sanitized message, retry attempt count.
 
 ---
+
+
+---
+
+## 19.5 Cross-Reference & Normative Knowledge Graph Strategy
+*(Integrated from Standards Knowledge Pipeline Master Blueprint)*
+
+### 19.5.1 Normative Reference Resolution & Graph Traversal
+
+- Normative references between specifications are extracted into `doc_references` table:
+  ```
+  TS 23.501 Clause 5.15 ──► [references] ──► TS 24.501 Clause 6.4 (S-NSSAI NAS signaling)
+  ```
+- Retrieval engine can expand candidates across 1-hop normative references for multi-hop questions.
+
+---
+
+
+
+---
+
+## 20.5 Dual-Tier Embedding & Reranking Specification Matrices
+*(Integrated from Standards Knowledge Pipeline Master Blueprint)*
+
+### 20.5.1 Dual-Tier Embedding Architecture
+
+The platform implements a decoupled, configuration-driven **Dual-Tier Embedding Architecture** to support rapid local evaluation/demo cycles alongside high-accuracy production deployments:
+
+### 20.1 Dual-Tier Embedding Specification Matrix
+
+| Metric | **Demo / Evaluation Tier** (Current Baseline) | **Production Tier** (Target Deployment) |
+|---|---|---|
+| **Model** | `BAAI/bge-small-en-v1.5` | `BAAI/bge-m3` |
+| **Model Footprint** | ~130 MB | ~2.27 GB |
+| **Parameter Count** | 33 Million | 560 Million |
+| **Vector Dimension** | **384 dimensions** (`halfvec(384)`) | **1024 dimensions** (`halfvec(1024)`) |
+| **Hardware Target** | Consumer CPU (Multi-core x86/ARM) | Dedicated GPU (NVIDIA T4 / A10G / CUDA) |
+| **Throughput (CPU)** | **~200–300 chunks / minute** | ~3–4 chunks / minute |
+| **Phase 1 Ingestion Time (16 Specs)** | **~25 to 35 minutes total** | ~54 hours (CPU) / ~15 mins (GPU) |
+| **Optimal Ingestion Batch Size** | **32 chunks / batch** | 16–32 chunks / batch |
+| **Use Case** | Local development, CI/CD, rapid demo & grading | Multi-lingual, dense+sparse hybrid, enterprise production |
+
+### 20.2 Decoupled Vector Storage Design
+- Vector representations are strictly decoupled into the `chunk_embeddings` relational table with a compound key `(chunk_id, model_name)`.
+- Column definition uses PostgreSQL `pgvector` half-precision float: `embedding halfvec(384)` with HNSW cosine distance index (`halfvec_cosine_ops`).
+- Environment variable `EMBEDDING_MODEL` in `.env` dictates both runtime query vectorization and batch ingestion without hardcoded model references.
+- Switching between Demo (`BAAI/bge-small-en-v1.5`) and Production (`BAAI/bge-m3`) requires zero application code changes—only an `.env` toggle and corresponding database vector dimension initialization.
+
+---
+
+
+
+### 20.5.2 Dual-Tier Reranker Specification Matrix
+
+The platform applies a cross-encoder joint-attention reranking layer to precisely order candidate chunks retrieved via RRF fusion:
+
+### 17.1 Dual-Tier Reranker Specification Matrix
+
+| Metric | **Demo / Evaluation Tier** (Current Baseline) | **Production Tier** (Target Deployment) |
+|---|---|---|
+| **Model** | `BAAI/bge-reranker-base` | `BAAI/bge-reranker-v2-m3` |
+| **Model Footprint** | ~440 MB | ~2.27 GB |
+| **Parameter Count** | 110 Million | 560 Million |
+| **Cross-Encoder Latency (Top-8, CPU)** | **~80–150 ms** | ~1.5–3.0 s |
+| **Hardware Target** | Consumer CPU / Memory-efficient instances | Dedicated GPU (NVIDIA CUDA / TensorRT) |
+| **Target Task** | Fast English 3GPP standards clause ranking | Multi-lingual, long-context complex telecom questions |
+| **Graceful Fallback** | Automatic fallback to RRF tag-boosted ranking if disabled | RRF tag-boosted fallback |
+
+- **Input:** Joint token pairs `[query, chunk_text]` scored via cross-encoder softmax.
+- **Output:** Top-8 highest-scoring chunks filtered by `RERANKER_FLOOR` (0.15) and passed to context assembler.
+- **Graceful Fallback:** If cross-encoder is disabled or uninitialized, tag-boosted RRF score with `RRF_FLOOR` (0.005) ranks candidates directly.
+
+---
+
+
+
+---
+
+## 26.5 Multi-Horizon Enterprise Scalability & Capacity Matrix
+*(Integrated from Standards Knowledge Pipeline Master Blueprint)*
+
+### 26.5.1 Capacity Matrix & Multi-Horizon Scaling Path
+
+### 26.1 Comparative Capacity Matrix: Phase 1 Curated 5GS vs. Complete Historical Corpus
+
+| Metric | **Phase 1: Curated Core 5GS Suite**<br>*(Immediate Zero-Cost Baseline)* | **Complete Historical 3GPP Corpus**<br>*(All 55 Series · Releases 1999–20)* |
+|---|---|---|
+| **Target Specifications** | **44 Flagship 5GS Specifications**<br>(Series 23, 24, 29, 33, 38 · Rel-17 & 18) | **4,500+ Specifications**<br>(GSM Phase 1/2, UMTS, LTE, 5G, 6G Study Items) |
+| **Document Versions / Revisions** | **88 Active Document Versions** | **85,000+ Historical & Draft Revisions** |
+| **Total Specification Pages** | **~14,800 Pages** | **~3,200,000 Pages** |
+| **Total Canonical Chunks (300–800 tok)**| **~30,200 Chunks** | **~1,200,000 Chunks** |
+| **Raw PDF / CAS Storage** | **~850 MB** (Compressed) | **~250 GB** (Compressed) |
+| **`document_chunks` (Text + Breadcrumbs)** | **~60 MB** | **~3.5 GB** |
+| **`chunk_embeddings` (BGE-M3 1024-dim)**| **~140 MB** (Vector + HNSW Index) | **~5.2 GB** (Vector + HNSW Index) |
+| **Full-Text Search GIN Index (`tsvector`)**| **~35 MB** | **~1.8 GB** |
+| **Relational Metadata (AST, Tables, Figs)**| **~35 MB** | **~1.0 GB** |
+| **Total PostgreSQL Database Size** | **~270 MB** ✅<br>*(54% of Neon 0.5 GB Free Tier)* | **~11.5 GB**<br>*(Neon Standard Tier: ~$1.90/month)* |
+| **Monthly Database Infrastructure Cost**| **$0.00 / month (Neon Free Tier)** | **~$1.90 / month** |
+
+---
+
+### 26.2 Horizon 1: Immediate Zero-Cost Execution (Neon 0.5 GB Free Tier)
+- Stores all **30,200 chunks**, full Markdown text, 1024-dim BGE-M3 vectors, and 7-layer tags directly inside Neon PostgreSQL.
+- Consumes **~270 MB**, leaving **~230 MB free buffer** for runtime query logs, evaluation runs, and transaction WAL.
+- **Zero external blob store complexity:** 100% of queries, vector scans, and text retrieval execute in a single PostgreSQL query.
+
+---
+
+### 26.3 Horizon 2: Full Historical Corpus Scaling Path (All 55 Series)
+- As the system scales to index all 55 Series (GSM 01–13, UMTS 25, LTE 36, IMS 26, OAM 28/32, 5G 38, etc.):
+  1. Database smoothly scales to **~11.5 GB** on Neon PostgreSQL.
+  2. Index partitioning (`PARTITION BY LIST (release_number)`) segregates historical releases (Rel-99 to Rel-14) from active releases (Rel-15 to Rel-20), maintaining sub-15ms HNSW vector scan latencies across 1.2M vectors.
+  3. Continuous background ingestion jobs crawl `ftp.3gpp.org` without disrupting active retrieval services.
+
+---
+
+
 
 ## 27. Testing Strategy
 
