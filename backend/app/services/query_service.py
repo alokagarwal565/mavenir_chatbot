@@ -155,7 +155,16 @@ class QueryService:
 
         # 6. Parse JSON output
         try:
-            parsed_json = json.loads(llm_resp.text)
+            clean_text = llm_resp.text.strip()
+            if clean_text.startswith("```json"):
+                clean_text = clean_text[7:]
+            elif clean_text.startswith("```"):
+                clean_text = clean_text[3:]
+            if clean_text.endswith("```"):
+                clean_text = clean_text[:-3]
+            clean_text = clean_text.strip()
+            
+            parsed_json = json.loads(clean_text)
             answer_text = parsed_json.get("answer", "")
             raw_claims = [Claim(text=cl.get("text", ""), source_ids=cl.get("source_ids", [])) for cl in parsed_json.get("claims", [])]
             llm_abstain = parsed_json.get("abstain", False)
@@ -350,7 +359,16 @@ class QueryService:
 
         # 6. Parse JSON output
         try:
-            parsed_json = json.loads(full_text)
+            clean_text = full_text.strip()
+            if clean_text.startswith("```json"):
+                clean_text = clean_text[7:]
+            elif clean_text.startswith("```"):
+                clean_text = clean_text[3:]
+            if clean_text.endswith("```"):
+                clean_text = clean_text[:-3]
+            clean_text = clean_text.strip()
+            
+            parsed_json = json.loads(clean_text)
             answer_text = parsed_json.get("answer", "")
             raw_claims = [Claim(text=cl.get("text", ""), source_ids=cl.get("source_ids", [])) for cl in parsed_json.get("claims", [])]
             llm_abstain = parsed_json.get("abstain", False)

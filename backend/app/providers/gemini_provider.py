@@ -164,7 +164,8 @@ class GeminiProvider:
                     model_name=self.primary_model,
                     system_instruction=system,
                     generation_config={
-                        "temperature": 0.0
+                        "temperature": 0.0,
+                        "response_mime_type": "application/json"
                     }
                 )
                 
