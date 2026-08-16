@@ -36,7 +36,7 @@ def _deterministic_embed(text: str, dim: int = 384) -> List[float]:
     norm = math.sqrt(sum(x * x for x in vec)) or 1.0
     return [x / norm for x in vec]
 
-def embed_chunks(texts: List[str], model_name: str = None, batch_size: int = 32) -> List[List[float]]:
+def embed_chunks(texts: List[str], model_name: str = None, batch_size: int = 8) -> List[List[float]]:
     if model_name is None:
         model_name = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
         
