@@ -39,7 +39,7 @@ const SPEC_OPTIONS: Option[] = [
 ];
 
 const SAMPLE_QUERIES = [
-  { icon: '⚙️', text: 'How does AMF handle Registration Request procedures per TS 23.502?' },
+  { icon: '⚙️', text: 'What is the structure of the 5G GUTI defined in TS 23.501?' },
   { icon: '🔐', text: 'What HTTP status codes are returned by Namf_Communication in TS 29.518?' },
   { icon: '⏱️', text: 'What is the default value of periodic registration timer T3512 in TS 24.501?' },
   { icon: '📡', text: 'How does NRF service discovery work per TS 29.510?' },

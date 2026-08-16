@@ -13,7 +13,7 @@ const DOMAIN_STARTERS = [
     icon: '🏗️',
     title: '5GS Architecture & Flows',
     desc: 'TS 23.501 & TS 23.502 Registration, PDU Session & Slicing',
-    prompt: 'How does AMF handle Registration Request procedures per TS 23.502?'
+    prompt: 'What is the structure of the 5G GUTI defined in TS 23.501?'
   },
   {
     icon: '📱',
