@@ -1,3 +1,4 @@
+import os
 import math
 import hashlib
 from typing import List, Optional
@@ -25,7 +26,6 @@ class BGEEmbeddingProvider:
         return self._model
 
     def embed_query(self, text: str) -> List[float]:
-        import os
         if os.environ.get("RENDER"):
             logger.info("skipping_embeddings_on_render_free_tier_to_prevent_oom")
             return []
@@ -74,7 +74,6 @@ class BGEReranker:
         if not candidates:
             return []
         
-        import os
         if os.environ.get("RENDER"):
             logger.info("skipping_reranker_on_render_free_tier_to_prevent_oom")
             return candidates[:top_k]
