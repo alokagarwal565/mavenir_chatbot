@@ -2,7 +2,8 @@ from fastapi import APIRouter, Request
 
 router = APIRouter()
 
-@router.api_route("/health", methods=["GET", "HEAD"], tags=["Health"])
+@router.get("/health", tags=["Health"])
+@router.head("/health", tags=["Health"])
 async def health_check(request: Request):
     db_status = "unknown"
     pool = getattr(request.app.state, "db_pool", None)

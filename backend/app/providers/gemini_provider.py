@@ -103,15 +103,14 @@ class GeminiProvider:
                         )
 
                         return LLMResponse(
-                            content=response.text,
+                            text=response.text,
                             model=model_name,
+                            provider="google",
                             input_tokens=input_toks,
                             output_tokens=output_toks,
-                            cost_usd=est_cost,
-                            fallback_used=model_is_fallback or key_is_backup,
+                            estimated_cost_usd=est_cost,
                             model_fallback_used=model_is_fallback,
-                            key_fallback_used=key_is_backup,
-                            timeout_count=timeout_count
+                            key_fallback_used=key_is_backup
                         )
 
                     except asyncio.TimeoutError:
