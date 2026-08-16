@@ -139,7 +139,8 @@ An **evidence-first RAG assistant** for querying official 3GPP specifications. I
 
 ### 3.4 Assumptions
 
-- **Assumption (RESOLVED via Architecture Choice):** Render (Docker Space, Free Tier) provides **2 vCPU + 16 GB RAM**, which completely eliminates memory constraints for hosting both `BAAI/bge-m3` (~2.3GB) and `BAAI/bge-reranker-v2-m3` (~1.1GB) simultaneously in memory without OOM. Render is retained as an active fallback option (with `RERANKER_ENABLED=false` or base model).
+- **Assumption (CORRECTED):** Originally assumed Render Free Tier provided 2 vCPU + 16 GB RAM. Real-world testing revealed Render Free Tier provides only **0.1 vCPU + 512MB RAM**. Loading PyTorch + `BAAI/bge-m3` + `BAAI/bge-reranker-v2-m3` triggers immediate Out-Of-Memory (OOM) crashes and CPU starvation.
+- **Architecture Pivot (v1.9):** On Render Free Tier, the heavy ML models are dynamically disabled. The system gracefully falls back to **Pure Lexical Search** using an upgraded PostgreSQL `websearch_to_tsquery` engine. PyTorch is forced into single-threaded mode to prevent `uvicorn` event loop starvation.
 - **Assumption:** 3GPP PDFs are the word-processed (not scanned) variety available from the official 3GPP FTP server — these are clean PDFs, not image-based scans.
 - **Assumption:** No authentication is required for this take-home submission.
 
@@ -3608,3 +3609,34 @@ Critical path: P0-01 -> P0-02 -> P0-03 -> P1-01 -> P1-02 -> P1-03 -> P1-04 -> P1
 ---
 
 *End of Implementation Plan — Version 1.6 (All 39 Tasks Completed)*
+
+---
+
+## 36. Production Deployment Hardening (OOM & PostgreSQL FTS)
+
+> **Version 1.9 Addendum** · Added: 2026-08-16
+> Covers: Render Free Tier OOM mitigation, PyTorch CPU starvation, and PostgreSQL Full-Text Search upgrades.
+
+### 36.1 The Render Free Tier Reality
+Initial deployments revealed that the Render Free Tier provides exactly **0.1 vCPU** and a hard limit of **512MB RAM**. The original assumption of 16GB RAM was incorrect for this specific environment.
+
+**Failure Modes:**
+1. **OOM Killer:** Loading the FastAPI server (150MB) + `BAAI/bge-m3` PyTorch model (350MB) instantly exceeded the 512MB limit, causing the container to be killed by the Linux Out-Of-Memory killer.
+2. **CPU Starvation:** PyTorch and OpenMP default to multi-threaded CPU execution. On a 0.1 vCPU container, attempting to run multi-threaded tensor operations caused thread thrashing, starving the `uvicorn` asyncio event loop and causing the server to fail `/health` checks.
+
+**The Fix:**
+- Heavy ML models (`bge-m3`, `bge-reranker`) are now **dynamically disabled** if the `RENDER` environment variable is detected.
+- PyTorch is explicitly forced into single-threaded mode via `torch.set_num_threads(1)` and `OMP_NUM_THREADS="1"` in `main.py` to protect the event loop.
+
+### 36.2 The Sparse Retrieval (Lexical) Fallback
+With embeddings disabled on the cloud deployment to prevent OOM, the system falls back entirely to **Sparse Retrieval (Lexical Search)** via PostgreSQL's Full-Text Search engine.
+
+**The Postgres FTS Flaw (`plainto_tsquery`):**
+The original lexical query used `plainto_tsquery`, which forces a strict `AND` condition across *every single word* in a user's natural language query. It also ignores `|` characters, breaking the `keyword_fallback_triggered` OR logic. This resulted in zero retrieved chunks for complex questions (e.g., "What is the structure of the 5G GUTI defined in TS 23.501?").
+
+**The Fix:**
+- Upgraded the database layer to use `websearch_to_tsquery`. This is the industry standard for production search bars as it natively handles logical operators (`OR`, `-`), quoted strings, and natural language gracefully.
+- Fixed the keyword fallback algorithm to use the literal `" OR "` joiner instead of `" | "`. 
+- Updated the frontend landing page suggested prompts to feature highly specific terminology (e.g., `GUTI`, `Namf_Communication`) which Lexical Search handles flawlessly.
+
+These changes ensure the system degrades gracefully under severe hardware constraints without sacrificing answer reliability, backed by the deterministic Answerability Checker which correctly issues `ABSTAIN` responses when Lexical Search fails to find sufficient evidence.
