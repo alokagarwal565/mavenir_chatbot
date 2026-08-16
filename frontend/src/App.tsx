@@ -16,16 +16,16 @@ const DOMAIN_STARTERS = [
     prompt: 'What is the structure of the 5G GUTI defined in TS 23.501?'
   },
   {
-    icon: '📱',
-    title: 'NAS Signaling & URSP',
-    desc: 'TS 24.501 & TS 24.526 5GMM/5GSM states & Route Selection',
-    prompt: 'What is the default value of periodic registration timer T3512 in TS 24.501?'
+    icon: '📡',
+    title: 'Radio Layer Functions',
+    desc: 'TS 38.300 NR Overall Description — SDAP, PDCP, RLC sublayers',
+    prompt: 'What are the main functions of the SDAP sublayer in TS 38.300?'
   },
   {
-    icon: '⚖️',
-    title: 'Policy & Charging',
-    desc: 'TS 23.503 Policy and Charging Control Framework for 5GS',
-    prompt: 'What are the main functions of the PCF defined in TS 23.503?'
+    icon: '🚀',
+    title: '5G Identity Construction',
+    desc: 'TS 23.501 — How GUAMI and 5G-TMSI combine into 5G-GUTI',
+    prompt: 'How is the 5G-GUTI constructed from the GUAMI and 5G-TMSI?'
   },
   {
     icon: '🌐',
