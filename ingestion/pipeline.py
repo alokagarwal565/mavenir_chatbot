@@ -20,7 +20,7 @@ async def get_db_size_mb(pool: asyncpg.Pool) -> float:
         row = await conn.fetchrow("SELECT pg_database_size(current_database()) AS size")
         return row["size"] / (1024 * 1024)
 
-DB_SIZE_LIMIT_MB = 470  # stop before Neon's 512MB hard limit
+DB_SIZE_LIMIT_MB = 400  # stop at 400 MB to leave a 100 MB buffer for Supabase's 500MB limit
 
 async def run_pipeline(config_path: str = "ingestion/specs_config.yaml", database_url: str = None):
     with open(config_path, "r", encoding="utf-8") as f:

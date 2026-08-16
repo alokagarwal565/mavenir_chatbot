@@ -27,13 +27,20 @@ const SPEC_OPTIONS: Option[] = [
 
   // Series 38: 5G NR Radio
   { value: 'TS 38.300', label: 'TS 38.300', description: 'NR Overall Description', minRelease: 18 },
+  { value: 'TS 38.321', label: 'TS 38.321', description: 'NR MAC Protocol', minRelease: 18 },
+  { value: 'TS 38.322', label: 'TS 38.322', description: 'NR RLC Protocol', minRelease: 18 },
+  { value: 'TS 38.323', label: 'TS 38.323', description: 'NR PDCP Protocol', minRelease: 18 },
   { value: 'TS 38.331', label: 'TS 38.331', description: 'NR RRC Protocol', minRelease: 18 },
   { value: 'TS 38.401', label: 'TS 38.401', description: 'NG-RAN Architecture', minRelease: 18 },
+  { value: 'TS 38.413', label: 'TS 38.413', description: 'NGAP Protocol', minRelease: 18 },
 
   // Series 29: Service-Based Interfaces (SBI)
+  { value: 'TS 29.500', label: 'TS 29.500', description: 'SBA Realization', minRelease: 18 },
   { value: 'TS 29.502', label: 'TS 29.502', description: 'Nsmf SMF Services', minRelease: 18 },
   { value: 'TS 29.503', label: 'TS 29.503', description: 'Nudm UDM Services', minRelease: 18 },
+  { value: 'TS 29.508', label: 'TS 29.508', description: 'Nsmf Event Exposure', minRelease: 18 },
   { value: 'TS 29.510', label: 'TS 29.510', description: 'Nnrf NRF Services', minRelease: 18 },
+  { value: 'TS 29.512', label: 'TS 29.512', description: 'Npcf Policy Control', minRelease: 18 },
   { value: 'TS 29.518', label: 'TS 29.518', description: 'Namf AMF Services', minRelease: 18 },
   { value: 'TS 29.571', label: 'TS 29.571', description: 'Common Data Types', minRelease: 18 },
 ];
