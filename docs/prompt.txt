@@ -1,0 +1,2256 @@
+# Mavenir 3GPP Standards RAG Assignment — Implementation Master Plan
+
+## ROLE
+
+You are acting as a **Principal AI/ML Engineer, RAG Architect, Backend/System Architect, Telecom/3GPP Researcher, Production Engineer, Technical Interviewer, and AI Coding-Agent Planner**.
+
+Your task is to create the **authoritative implementation plan** for a Mavenir Graduate Engineer Trainee (GET) take-home assignment.
+
+You are **NOT implementing the project yet**.
+
+Your only implementation-related deliverable in this task is:
+
+```text
+D:\Academic\mavenir\_chatbot\implementation_plan.md
+```
+
+This document will become the **single source of truth** for the complete project and will later be consumed by Claude Code during implementation.
+
+---
+
+# 1. PRIMARY OBJECTIVE
+
+Create a detailed, implementation-ready `implementation_plan.md` that allows:
+
+1. A new engineer to understand the complete system without needing another architecture document.
+2. A technical interviewer to understand and challenge the architectural decisions.
+3. Claude Code to implement the project phase-by-phase using only the plan and its task cards.
+4. Every implementation task to be independently understandable, testable, and executable.
+5. Engineering decisions to be traceable to requirements, evidence, measured results, or clearly labeled recommendations.
+
+The plan must optimize for:
+
+**technical correctness > reliability > measurable evaluation > production thinking > interview defensibility > feature count**
+
+Do not add complexity merely to make the architecture look sophisticated.
+
+---
+
+# 2. ABSOLUTE BEHAVIORAL RULES
+
+Follow these rules throughout the task.
+
+## Rule 1 — Planning only
+
+Do NOT:
+
+* implement application features
+* create production source files
+* create placeholder implementations
+* write application code except tiny illustrative snippets when necessary to explain an interface/schema
+* initialize unnecessary frameworks
+* modify the repository into a working product
+
+You may create **only the requested implementation plan** unless a repository inspection operation itself requires temporary tooling that does not become part of the project.
+
+## Rule 2 — Inspect before designing
+
+Before proposing repository structure, architecture, libraries, or implementation tasks, inspect the target directory and existing environment.
+
+Target repository:
+
+```text
+D:\Academic\mavenir\_chatbot
+```
+
+Determine whether it is truly empty or contains existing files.
+
+Inspect, where present:
+
+* directory structure
+* README
+* frontend files
+* backend files
+* Python configuration
+* package files
+* lock files
+* test files
+* Docker files
+* environment examples
+* configuration files
+* scripts
+* CI/CD files
+* existing documentation
+
+Do not assume the repository is empty merely because it is expected to be empty.
+
+If the repository is empty, explicitly record that as an observed fact in the plan.
+
+## Rule 3 — Study the reference implementation plan
+
+A reference implementation plan exists at:
+
+```text
+D:\Academic\webcmd\_hack\docs\implementation\_plan.md
+```
+
+Read and analyze it before designing the new plan.
+
+Study its:
+
+* structure
+* hierarchy
+* section ordering
+* level of specificity
+* implementation philosophy
+* task-card format
+* inherited engineering contracts
+* phase structure
+* acceptance criteria
+* testing instructions
+* risk treatment
+* implementation tracker
+* execution philosophy
+
+Use the **quality, structure, and execution philosophy** of the reference as the template.
+
+Do NOT copy:
+
+* its domain
+* its architecture decisions
+* unrelated technologies
+* irrelevant assumptions
+* its product-specific requirements
+
+The new plan must be specific to the **Mavenir 3GPP Standards RAG Assistant**.
+
+## Rule 4 — Research before asserting current facts
+
+The plan contains several areas where current information must not be guessed.
+
+Research and verify current information when required, especially:
+
+* official 3GPP specification metadata
+* specification titles
+* currently relevant releases
+* current versions
+* official source/download locations
+* current provider/library capabilities
+* current deployment constraints
+* current model availability
+* current embedding/reranker suitability
+* current Neon/PostgreSQL/pgvector capabilities
+* current Vercel constraints
+* current Render constraints
+* current Gemini/API behavior where relevant
+
+Prefer authoritative sources.
+
+For 3GPP information, prefer official 3GPP sources whenever possible.
+
+Never invent a specification number, version, title, release, URL, API capability, model capability, or library feature.
+
+---
+
+# 3. EVIDENCE CLASSIFICATION
+
+Every meaningful architectural or factual statement must be mentally classified as one of:
+
+### VERIFIED FACT
+
+Directly supported by:
+
+* the assignment
+* the repository
+* the reference implementation plan
+* official documentation
+* authoritative external research
+
+### INFERENCE
+
+A reasonable interpretation of what the assignment or technical context likely implies.
+
+### RECOMMENDATION
+
+An engineering decision proposed by you.
+
+### ASSUMPTION
+
+Something that must be assumed because the required information is not available.
+
+Do not blur these categories.
+
+Where useful, explicitly label decisions as:
+
+```text
+Verified
+Inference
+Recommendation
+Assumption
+```
+
+The plan must never present an inference or recommendation as though Mavenir explicitly required it.
+
+---
+
+# 4. ASSIGNMENT CONTEXT
+
+The assignment is from:
+
+**Mavenir**
+
+Position:
+
+**Graduate Engineer Trainee (GET)**
+
+The core product is a:
+
+**3GPP Standards Intelligence Assistant**
+
+Alternative name:
+
+**3GPP Grounded RAG Assistant**
+
+The central concept is:
+
+> An evidence-first RAG assistant for querying authoritative 3GPP telecommunications standards, returning citation-backed answers and abstaining when the indexed evidence is insufficient to answer reliably.
+
+This is NOT simply:
+
+> "ChatGPT with PDFs"
+
+and NOT simply:
+
+> "A vector database connected to an LLM."
+
+The architecture must demonstrate understanding of:
+
+```text
+document quality
+→ structured ingestion
+→ metadata preservation
+→ structure-aware chunking
+→ retrieval
+→ reranking
+→ evidence sufficiency
+→ grounded generation
+→ citation validation
+→ abstention
+→ evaluation
+```
+
+The LLM is not the source of truth.
+
+The source of truth is:
+
+```text
+official 3GPP documentation
++
+retrieval
++
+evidence
++
+citations
+```
+
+The LLM's role is to:
+
+```text
+interpret
+synthesize
+explain
+```
+
+The deterministic system's role is to:
+
+```text
+retrieve
+filter
+validate
+score
+enforce
+abstain
+```
+
+The evaluator's role is to:
+
+```text
+measure
+```
+
+---
+
+# 5. EXPLICIT REQUIREMENTS VS INFERRED REQUIREMENTS
+
+The plan must begin by clearly separating:
+
+## 5.1 Explicit Mavenir Requirements
+
+Only include requirements that are directly supported by the assignment materials.
+
+Do not embellish them.
+
+## 5.2 Reasonable Inferences
+
+Explain what Mavenir is likely evaluating based on the assignment wording.
+
+Potential areas include:
+
+* RAG fundamentals
+* retrieval quality
+* hallucination reduction
+* citation reliability
+* technical document handling
+* evaluation methodology
+* backend/system design
+* LLM understanding
+* telecom/3GPP awareness
+* engineering trade-offs
+* ability to defend design decisions
+
+These must be labeled as **inferences**, not facts.
+
+## 5.3 Recommended Engineering Decisions
+
+Clearly identify what YOU recommend building and why.
+
+---
+
+# 6. TARGET TECHNOLOGY DIRECTION
+
+The target architecture is:
+
+## Frontend
+
+* React
+* TypeScript
+* Vite
+* Deployment: Vercel
+
+## Backend
+
+* Python
+* FastAPI
+* Deployment: Render
+
+## Database
+
+* PostgreSQL
+* pgvector
+* Managed through Neon
+
+Do not add a dedicated vector database unless measurable evidence shows that PostgreSQL + pgvector is insufficient.
+
+## LLM
+
+Use a provider abstraction.
+
+Current preferred provider:
+
+**Gemini**
+
+The architecture must allow provider/model configuration through environment variables.
+
+Include a sensible fallback strategy for provider/model failure, but do not turn this into unnecessary multi-LLM orchestration.
+
+## Retrieval
+
+Recommended direction:
+
+```text
+semantic vector retrieval
++
+PostgreSQL lexical/full-text retrieval
++
+fusion
++
+reranking
+```
+
+Evaluate this design critically rather than treating it as automatically correct.
+
+## Embeddings
+
+Evaluate a strong retrieval embedding model, such as a suitable BGE-family model or equivalent.
+
+Do NOT choose an embedding model because it is popular.
+
+The plan must justify the selected model based on factors such as:
+
+* technical terminology handling
+* retrieval quality
+* dimensions
+* latency
+* cost
+* deployment constraints
+* reproducibility
+* ecosystem stability
+
+## Reranking
+
+Use a cross-encoder or equivalent reranker if practical and stable.
+
+There must be a fallback path where retrieval still works without the reranker.
+
+---
+
+# 7. DEPLOYMENT TARGET
+
+The intended production topology is:
+
+```text
+User Browser
+    ↓
+Vercel
+    ↓ HTTPS
+React Frontend
+    ↓
+Render
+    ↓
+FastAPI Backend
+    ↓
+Neon PostgreSQL + pgvector
+    ↓
+LLM Provider
+```
+
+The React application must NEVER contain:
+
+* database credentials
+* LLM API keys
+* embedding provider secrets
+* private service credentials
+
+All secrets remain server-side.
+
+The deployment plan must explicitly cover:
+
+* CORS
+* environment variables
+* production configuration
+* health endpoint
+* error handling
+* logging
+* deployment smoke tests
+* frontend/backend separation
+* database connections
+* Render constraints
+* Vercel constraints
+* Neon pooling/connection considerations
+
+---
+
+# 8. 3GPP DOCUMENT STRATEGY
+
+The initial knowledge base should be deliberately small, technically meaningful, and easy to defend.
+
+Candidate specifications include:
+
+* TS 23.501
+* TS 23.502
+* TS 24.501
+* TS 38.331
+* TS 33.501
+
+Potential optional specification:
+
+* TS 29.500
+
+However, do NOT blindly accept this list.
+
+Before finalizing the plan, verify:
+
+* specification number
+* official title
+* relevant release
+* current version
+* authoritative source location
+* download location
+* availability of required metadata
+
+Use official 3GPP sources whenever possible.
+
+Then explicitly define whether version 1 of the knowledge base is:
+
+* single-release
+  or
+* multi-release
+
+Prefer a consistent initial release strategy unless evidence supports another approach.
+
+Define how release/version metadata prevents incompatible versions from being mixed.
+
+Example failure that must be prevented:
+
+```text
+Question:
+TS 23.501 Release X behavior
+
+Incorrect retrieval:
+TS 23.501 Release Y
+
+Incorrect generation:
+Answer combining Release X and Release Y
+```
+
+---
+
+# 9. INGESTION ARCHITECTURE
+
+Design an explicit offline ingestion pipeline:
+
+```text
+Official 3GPP PDF
+↓
+PDF parsing
+↓
+text extraction
+↓
+document cleaning
+↓
+section/subsection detection
+↓
+metadata extraction
+↓
+structure-aware chunking
+↓
+embedding generation
+↓
+Neon PostgreSQL + pgvector
+```
+
+Preserve at least:
+
+* specification number
+* title
+* release
+* version
+* section number
+* section title
+* parent section
+* page number
+* chunk ID
+* source URL
+* source checksum
+* extracted text
+* embedding
+
+Explicitly address:
+
+* headers/footers
+* page numbers
+* section numbering
+* repeated boilerplate
+* tables
+* structured paragraphs
+* malformed PDF extraction
+* duplicate content
+* versioning
+* checksums
+* re-ingestion
+* reproducibility
+
+Do not assume PDF extraction is clean.
+
+Include ingestion validation.
+
+The plan must explain how extraction errors could affect retrieval and citation correctness.
+
+---
+
+# 10. CHUNKING STRATEGY
+
+Treat 3GPP as a structured technical corpus.
+
+Preferred hierarchy:
+
+```text
+Specification
+→ Clause
+→ Subclause
+→ Paragraph/Table
+```
+
+Do not default blindly to:
+
+```text
+chunk_size = 1000
+overlap = 200
+```
+
+Define:
+
+* approximate token range
+* structural boundaries
+* overlap policy
+* table handling
+* page attribution
+* parent section metadata
+* chunk ID scheme
+* metadata schema
+* behavior for very large sections
+* handling of orphaned paragraphs
+* handling of tables
+* handling of cross-references
+
+Explicitly explain the trade-off between:
+
+```text
+too-small chunks
+```
+
+and
+
+```text
+too-large chunks
+```
+
+---
+
+# 11. FULL RAG ARCHITECTURE
+
+Design the complete path:
+
+```text
+3GPP PDF
+→ ingestion
+→ parsing
+→ cleaning
+→ metadata extraction
+→ structure-aware chunking
+→ embedding
+→ pgvector storage
+→ lexical indexing
+→ query understanding
+→ metadata filtering
+→ hybrid retrieval
+→ candidate fusion
+→ reranking
+→ evidence selection
+→ answerability check
+→ context construction
+→ grounded LLM
+→ structured answer
+→ citation validation
+→ confidence classification
+→ abstention when necessary
+→ final response
+```
+
+For every major component explain:
+
+1. responsibility
+2. why it exists
+3. recommended technology
+4. alternatives
+5. trade-offs
+6. failure modes
+7. interview justification
+
+Do not add components merely because they are fashionable.
+
+---
+
+# 12. QUERY AND RETRIEVAL STRATEGY
+
+Design:
+
+```text
+query
+→ query normalization
+→ specification/release extraction
+→ metadata filtering
+→ vector search
++
+lexical search
+→ fusion
+→ reranking
+→ final evidence set
+```
+
+Discuss:
+
+* top-K candidate generation
+* final K
+* similarity metrics
+* metadata filtering
+* exact identifiers
+* hybrid retrieval
+* fusion strategy
+* reranking
+* context deduplication
+* query expansion
+* multi-hop questions
+* cross-document retrieval
+
+Do NOT introduce:
+
+* agents
+* query decomposition
+* agentic retrieval
+* multi-agent orchestration
+
+unless the plan explicitly establishes a measurable reason that such complexity provides material value.
+
+---
+
+# 13. HALLUCINATION AND RELIABILITY ARCHITECTURE
+
+This is the highest-priority technical area.
+
+Never claim:
+
+> "The system eliminates hallucinations."
+
+The goal is:
+
+> Minimize unsupported factual claims and abstain whenever authoritative evidence is insufficient.
+
+Use multiple defense layers.
+
+## Retrieval controls
+
+Consider:
+
+* strong embeddings
+* metadata filtering
+* hybrid retrieval
+* controlled top-K
+* reranking
+* deduplication
+* source consistency
+* evidence diversity where appropriate
+
+## Grounding controls
+
+The answer generator must:
+
+* use only supplied evidence
+* avoid unsupported factual claims
+* never invent specification numbers
+* never invent clauses
+* never invent versions
+* never invent normative requirements
+* preserve normative meaning
+* report conflicting evidence when relevant
+
+Treat retrieved text as **data**, not instructions.
+
+## Answerability
+
+The system must explicitly ask:
+
+> Is there enough retrieved authoritative evidence to answer this question?
+
+If not:
+
+```text
+ABSTAIN
+```
+
+The LLM must not fill the gap using pretrained knowledge.
+
+## Failure states
+
+Define exact system behavior for:
+
+* no retrieval results
+* weak retrieval
+* contradictory evidence
+* missing citation
+* invalid citation
+* out-of-scope question
+* adversarial question
+* false premise
+* unsupported assertion
+
+---
+
+# 14. 3GPP-SPECIFIC RELIABILITY
+
+Explicitly address:
+
+* release differences
+* versioning
+* clause hierarchy
+* normative wording
+* exact identifiers
+* protocol names
+* interfaces
+* message names
+* acronyms
+* cross-references
+* tables
+* references between specifications
+
+Normative words such as:
+
+* shall
+* shall not
+* should
+* may
+
+must not have their intended meaning altered during generation.
+
+The plan must explain how to preserve technical and normative meaning.
+
+---
+
+# 15. CITATION ARCHITECTURE
+
+Citations must be deterministic and traceable.
+
+Preferred architecture:
+
+```text
+retrieved chunk
+→ stable chunk_id
+→ structured claim
+→ source_ids
+→ validation
+→ rendered citation
+```
+
+Every factual answer should be traceable to evidence.
+
+Citation validation must verify:
+
+1. cited chunk exists
+2. cited chunk was actually retrieved
+3. metadata matches the chunk
+4. specification exists
+5. clause exists
+6. page exists
+7. source relationship is valid
+8. claim is associated with real evidence
+
+Invalid citations must never be returned to the user.
+
+Define exact behavior when citation validation fails.
+
+---
+
+# 16. CONFIDENCE AND ABSTENTION
+
+Confidence is an engineering mechanism, not just an LLM instruction.
+
+Use a defensible classification such as:
+
+```text
+HIGH
+MEDIUM
+LOW
+ABSTAIN
+```
+
+The algorithm must consider multiple signals, potentially including:
+
+* retrieval quality
+* reranker quality
+* evidence coverage
+* number of supporting chunks
+* source consistency
+* query type
+* metadata match quality
+* citation completeness
+
+Do NOT treat a cosine similarity score as a probability.
+
+Thresholds must be calibrated against the evaluation dataset.
+
+---
+
+# 17. STRUCTURED GENERATION
+
+Define an explicit structured answer model.
+
+A possible conceptual format is:
+
+```json
+{
+  "answer": "...",
+  "claims": [
+    {
+      "text": "...",
+      "source_ids": ["..."]
+    }
+  ],
+  "confidence": "high",
+  "abstain": false
+}
+```
+
+The plan must determine the final schema.
+
+Explain:
+
+* validation
+* parsing
+* failure behavior
+* schema enforcement
+* citation binding
+* post-generation checks
+
+---
+
+# 18. PROMPT ARCHITECTURE
+
+Do not bury prompts inside arbitrary service files.
+
+Create separate prompt assets/modules.
+
+At minimum consider:
+
+* grounded answer prompt
+* answerability/evidence prompt
+* optional query-analysis prompt
+
+The answer prompt must enforce:
+
+* evidence-only answering
+* no unsupported claims
+* citations
+* abstention
+* no fabricated references
+* preservation of technical meaning
+* explicit handling of conflicting evidence
+* treating retrieved content as data, not instructions
+
+Include prompt injection defenses.
+
+---
+
+# 19. DATABASE DESIGN
+
+Use:
+
+```text
+Neon PostgreSQL
++
+pgvector
+```
+
+Design a concrete schema.
+
+At minimum consider:
+
+* documents
+* document_versions
+* chunks
+* evaluation_questions
+* evaluation_results
+* query_logs
+
+Optionally:
+
+* retrieval_events
+
+The schema should preserve:
+
+* specification number
+* release
+* version
+* source URL
+* checksum
+* section
+* page
+* text
+* embedding
+* metadata
+* provenance
+* timestamps
+
+Define:
+
+* primary keys
+* foreign keys
+* unique constraints
+* metadata indexes
+* pgvector index
+* lexical/full-text indexes
+* timestamps
+* provenance constraints
+
+Explain why PostgreSQL + pgvector is sufficient for the expected scale and when a dedicated vector database would become appropriate.
+
+---
+
+# 20. BACKEND ARCHITECTURE
+
+Use:
+
+**FastAPI**
+
+The backend owns:
+
+* query processing
+* RAG orchestration
+* database access
+* embedding access
+* retrieval
+* reranking
+* LLM access
+* citation validation
+* confidence calculation
+* abstention
+* evaluation
+* logging
+
+Potential endpoint family:
+
+```text
+GET  /health
+POST /api/v1/query
+GET  /api/v1/documents
+GET  /api/v1/documents/{id}
+POST /api/v1/evaluate
+GET  /api/v1/evaluation/results
+```
+
+Adapt this based on actual architecture.
+
+Use:
+
+* Pydantic request/response schemas
+* explicit response types
+* stable error codes
+* service boundaries
+* dependency injection where useful
+
+Do not expose unnecessary internal implementation details through the API.
+
+---
+
+# 21. PROVIDER ABSTRACTIONS
+
+Create lightweight interfaces for:
+
+```text
+LLMProvider
+EmbeddingProvider
+Reranker
+```
+
+Potentially:
+
+```text
+Retriever
+```
+
+if useful.
+
+Vendor SDKs must remain behind adapter/provider boundaries.
+
+Core business logic must not directly depend on provider-specific SDKs.
+
+For example, a core query service should not contain direct vendor-specific imports.
+
+Explain the trade-off between abstraction and overengineering.
+
+Only create abstractions that materially improve:
+
+* testing
+* provider replacement
+* separation of concerns
+* reliability
+* maintainability
+
+---
+
+# 22. FRONTEND
+
+Use:
+
+* React
+* TypeScript
+* Vite
+* Vercel
+
+Required UI concepts:
+
+* question input
+* answer
+* confidence/evidence state
+* citations
+* specification number
+* release
+* version
+* clause/section
+* page
+* source excerpt
+* latency
+* abstention state
+
+The UI should feel like an **engineering/standards intelligence assistant**, not a generic chat application.
+
+Optional:
+
+* debug/evidence panel
+* retrieved chunks
+* reranker score
+* evidence score
+* latency breakdown
+
+Keep the UI restrained.
+
+Do not overbuild.
+
+---
+
+# 23. EVALUATION FRAMEWORK
+
+Evaluation must be a first-class subsystem.
+
+Create an initial evaluation set of approximately **40–60 questions**, unless repository/research evidence suggests a better size.
+
+Categorize questions into:
+
+* direct factual
+* clause-specific
+* cross-document
+* multi-hop
+* ambiguous
+* answerable
+* unanswerable
+* adversarial/hallucination traps
+* false-premise
+
+Each evaluation question must have ground-truth source references.
+
+## Retrieval metrics
+
+Use only useful, explainable metrics such as:
+
+* Recall@K
+* MRR
+* nDCG
+
+## Generation metrics
+
+Consider:
+
+* answer correctness
+* groundedness
+* citation correctness
+* unsupported claim rate
+
+## Abstention metrics
+
+Define a defensible formulation such as:
+
+* abstention precision
+* abstention recall
+* abstention accuracy
+
+## Operational metrics
+
+Measure:
+
+* P50 latency
+* P95 latency
+* retrieval latency
+* reranking latency
+* LLM latency
+* total latency
+
+Define precisely what constitutes an unsupported claim/hallucination.
+
+Do not invent performance numbers.
+
+The implementation plan must require actual measured results during implementation.
+
+---
+
+# 24. TESTING
+
+Prioritize high-risk logic.
+
+## Unit tests
+
+At minimum:
+
+* chunk metadata
+* section parsing
+* version filtering
+* citation validation
+* answerability
+* confidence logic
+* retrieval fusion
+* score calculations
+* schema validation
+* output validation
+
+## Integration tests
+
+At minimum:
+
+* Neon retrieval
+* vector search
+* lexical search
+* API query path
+* provider adapter
+* reranker
+* citation pipeline
+
+## Adversarial tests
+
+Include:
+
+* prompt injection
+* false premises
+* fake section references
+* fake specification references
+* unsupported claims
+* out-of-scope questions
+* cross-release contamination
+
+## End-to-end test
+
+A deterministic fixture-based path should ideally cover:
+
+```text
+query
+→ retrieval
+→ reranking
+→ evidence check
+→ LLM
+→ citation validation
+→ final answer
+```
+
+Clearly distinguish:
+
+**offline deterministic tests**
+
+from:
+
+**live-provider tests**
+
+---
+
+# 25. LOGGING AND OBSERVABILITY
+
+Define structured logging.
+
+At minimum consider:
+
+* request_id
+* timestamp
+* query
+* detected specification
+* detected release
+* retrieval count
+* retrieval latency
+* reranker latency
+* provider
+* model
+* LLM latency
+* confidence
+* abstained
+* citation count
+* citation validation result
+* total latency
+
+Never log:
+
+* API keys
+* database passwords
+* secrets
+* sensitive headers
+* unnecessary sensitive content
+
+Create a logging/redaction contract.
+
+---
+
+# 26. ERROR TAXONOMY
+
+Define stable application-level error codes.
+
+Potential categories:
+
+```text
+INVALID_REQUEST
+DOCUMENT_NOT_FOUND
+RETRIEVAL_FAILED
+RERANKER_FAILED
+LLM_PROVIDER_FAILED
+LLM_OUTPUT_INVALID
+INSUFFICIENT_EVIDENCE
+CITATION_INVALID
+DATABASE_UNAVAILABLE
+INTERNAL_ERROR
+```
+
+Improve the taxonomy if analysis suggests a better structure.
+
+Rules:
+
+* classify errors at system boundaries
+* do not leak raw provider errors
+* do not silently return empty answers
+* preserve request IDs
+* treat abstention as a valid application outcome, not a server error
+
+---
+
+# 27. SECURITY
+
+Explicitly define:
+
+* secret handling
+* environment variables
+* CORS
+* request validation
+* parameterized SQL
+* prompt injection handling
+* provider error sanitization
+* logging redaction
+* fail-closed behavior
+* client/server trust boundaries
+
+The frontend must never contain private credentials.
+
+---
+
+# 28. PRODUCTION ARCHITECTURE DIAGRAMS
+
+Include Mermaid diagrams.
+
+At minimum include:
+
+## Online query architecture
+
+```text
+User Browser
+↓
+Vercel / React
+↓ HTTPS
+Render / FastAPI
+├── Query Understanding
+├── Metadata Filtering
+├── Hybrid Retrieval
+├── Reranking
+├── Answerability
+├── LLM
+├── Citation Validation
+└── Evaluation
+↓
+Neon PostgreSQL + pgvector
+```
+
+## Offline ingestion architecture
+
+```text
+Official 3GPP Sources
+↓
+Ingestion
+↓
+Parsing / Cleaning
+↓
+Structure Detection
+↓
+Chunking
+↓
+Embedding
+↓
+Neon PostgreSQL + pgvector
+```
+
+Make it explicit that ingestion is **offline/preprocessing** and is not performed on every user query.
+
+---
+
+# 29. DEPLOYMENT PLAN
+
+Create a dedicated deployment strategy for:
+
+## Vercel
+
+Define:
+
+* framework/build behavior
+* output
+* environment variables
+* backend URL configuration
+* production API URL
+* client-side configuration boundaries
+
+## Render
+
+Define:
+
+* Python runtime
+* build command
+* start command
+* environment variables
+* health endpoint
+* deployment behavior
+* CORS
+* logs
+* database connectivity
+
+## Neon
+
+Define:
+
+* production database
+* pgvector extension
+* connection strategy
+* pooling considerations
+* schema initialization
+* indexes
+* migration strategy
+
+The system must be deployable without requiring Mavenir to execute the entire stack locally.
+
+If anything must remain local-only, explicitly explain why.
+
+---
+
+# 30. SCOPE MANAGEMENT
+
+Define three scope levels:
+
+## CORE
+
+Minimum system required for a strong submission.
+
+## MVP
+
+Complete assignment-quality product.
+
+## STRETCH
+
+Useful differentiators that should only be built after the core system is stable.
+
+Use engineering judgment to assign features to the correct tier.
+
+Every major scope decision should answer:
+
+> Does this materially improve reliability, evaluation, deployability, or interview defensibility?
+
+If not, exclude it from core scope.
+
+Explicitly reject unnecessary technologies such as:
+
+* agents
+* multi-agent systems
+* LangGraph
+* knowledge graphs
+* fine-tuning
+* Kubernetes
+* microservices
+* Redis
+* unnecessary authentication
+* voice
+* mobile app
+* elaborate multi-LLM orchestration
+* enormous document corpora
+* oversized observability platforms
+
+Only include one when there is a clearly justified, evidence-backed reason.
+
+---
+
+# 31. RISK REGISTER
+
+Create a realistic risk register.
+
+At minimum consider:
+
+* poor PDF extraction
+* incorrect section/page metadata
+* weak retrieval on telecom terminology
+* unsupported LLM claims
+* invalid citations
+* false confidence
+* mixed releases/versions
+* Neon/pgvector issues
+* Render deployment issues
+* Vercel/Render CORS issues
+* provider quota/rate limits
+* evaluation dataset weaknesses
+* overengineering
+
+For every risk provide:
+
+* ID
+* description
+* likelihood
+* impact
+* mitigation
+* detection method
+* owner phase
+* fallback
+
+Identify the **three risks most likely to determine submission success**.
+
+---
+
+# 32. INTERVIEW DEFENSIBILITY
+
+For important architecture decisions, include a compact table or structured section containing:
+
+* likely interviewer question
+* why the chosen design was selected
+* weak answer
+* strong answer
+
+At minimum cover:
+
+* why RAG
+* why not fine-tuning
+* why hybrid retrieval
+* why reranking
+* why the embedding model
+* why pgvector
+* why metadata filtering
+* why this chunking strategy
+* how hallucinations are reduced
+* how abstention works
+* how citation validation works
+* how evaluation works
+* why these 3GPP specifications
+* why release/version metadata matters
+* how unsupported questions are handled
+
+Keep this practical.
+
+Do not turn the document into a massive interview handbook.
+
+---
+
+# 33. REPOSITORY STRUCTURE
+
+After inspecting the actual repository, propose the appropriate structure.
+
+A possible direction is:
+
+```text
+3gpp-rag-assistant/
+├── frontend/
+├── backend/
+├── ingestion/
+├── evaluation/
+├── data/
+├── docs/
+├── tests/
+├── .env.example
+├── README.md
+└── implementation_plan.md
+```
+
+But this is only an example.
+
+Do NOT force this structure if inspection and architecture analysis support something better.
+
+The final repository layout must be justified.
+
+---
+
+# 34. INHERITED ENGINEERING CONTRACTS
+
+Before the task cards, define contracts inherited by every implementation task.
+
+At minimum:
+
+## Architecture Contract
+
+Vendor SDKs remain behind provider/adapter boundaries.
+
+## Security Contract
+
+* no secrets client-side
+* parameterized SQL
+* strict input validation
+* no raw provider errors
+* correct CORS
+* fail closed
+
+## RAG Contract
+
+* retrieval is observable
+* every evidence chunk has a stable ID
+* citations originate from retrieved evidence
+* unsupported answers abstain
+
+## Versioning Contract
+
+Every indexed evidence item carries:
+
+* specification
+* release
+* version
+
+## Evaluation Contract
+
+Major retrieval/generation changes must remain measurable.
+
+## Logging Contract
+
+Every query receives a request ID and structured logs.
+
+## Deployment Contract
+
+Frontend and backend must be independently deployable.
+
+---
+
+# 35. PHASE ARCHITECTURE
+
+Create dependency-aware phases.
+
+Use this conceptual sequence unless analysis strongly suggests another ordering:
+
+## PHASE 0 — Foundation
+
+* repository foundation
+* frontend foundation
+* FastAPI foundation
+* configuration
+* Neon connectivity
+* health endpoint
+* deployment skeleton
+
+## PHASE 1 — 3GPP Ingestion
+
+```text
+official sources
+→ parsing
+→ metadata
+→ chunking
+→ database
+```
+
+## PHASE 2 — Retrieval
+
+```text
+query
+→ vector retrieval
+→ lexical retrieval
+→ hybrid retrieval
+```
+
+## PHASE 3 — Grounded Generation
+
+```text
+retrieval
+→ context
+→ grounded answer
+→ citations
+```
+
+## PHASE 4 — Reliability
+
+```text
+reranking
+→ answerability
+→ confidence
+→ abstention
+→ citation validation
+```
+
+## PHASE 5 — Evaluation
+
+```text
+dataset
+→ metrics
+→ benchmark
+→ failure analysis
+```
+
+## PHASE 6 — Production Deployment
+
+```text
+Vercel
++
+Render
++
+Neon
++
+production configuration
+```
+
+## PHASE 7 — Demo Hardening
+
+* tests
+* fixtures
+* observability
+* README
+* architecture diagrams
+* evaluation results
+* demo runbook
+
+Every phase should end with a runnable/demoable state.
+
+---
+
+# 36. DEMO GATES
+
+Define explicit demo gates.
+
+At minimum:
+
+```text
+Gate 1 — Backend + Neon healthy
+Gate 2 — 3GPP documents successfully indexed
+Gate 3 — Relevant evidence retrieved
+Gate 4 — Grounded answer with valid citations
+Gate 5 — Correct abstention on an unanswerable query
+Gate 6 — Evaluation results generated
+Gate 7 — Public Vercel + Render deployment works
+Gate 8 — Complete end-to-end demonstration
+```
+
+Identify the strongest milestone for demonstrating the core value of the system.
+
+---
+
+# 37. DESCOPE LADDER
+
+Create a ruthless descope order.
+
+Potential cuts:
+
+1. advanced UI polish
+2. sophisticated query decomposition
+3. multiple reranker implementations
+4. advanced observability
+5. additional specifications
+6. advanced evaluation automation
+
+Never descope:
+
+* working RAG
+* source metadata
+* citations
+* abstention
+* hallucination controls
+* evaluation
+* deployment
+* README
+* critical tests
+
+Explicitly state the **minimum acceptable submission**.
+
+---
+
+# 38. DOCUMENTATION REQUIREMENTS
+
+The implementation roadmap must include tasks for creating:
+
+## README
+
+Cover:
+
+* problem
+* why 3GPP
+* architecture
+* setup
+* deployment
+* supported specifications
+* hallucination controls
+* evaluation results
+* example queries
+* failure cases
+* screenshots
+* limitations
+
+## Architecture documentation
+
+Explain the full architecture.
+
+## Evaluation documentation
+
+Explain:
+
+* dataset
+* metrics
+* methodology
+* results
+* failure analysis
+
+## Deployment documentation
+
+Explain:
+
+* Vercel
+* Render
+* Neon
+
+## Demo runbook
+
+Provide a concise **5–10 minute walkthrough**.
+
+---
+
+# 39. CLAUDE CODE EXECUTION PLAN
+
+This is one of the most important sections of the document.
+
+Create:
+
+```markdown
+## AI Coding Agent Execution Plan
+```
+
+Tasks must be sequentially executable.
+
+Each task MUST contain:
+
+```text
+[TASK-ID]
+
+Module:
+Objective:
+Estimated Time:
+Dependencies:
+Files to Create:
+Files to Modify:
+Expected Output:
+Acceptance Criteria:
+Testing Steps:
+Notes for Claude Code:
+Commit Message:
+```
+
+Tasks should normally be sized around **10–30 minutes**.
+
+A larger task is acceptable only when splitting it would create unnecessary fragmentation.
+
+Do NOT create vague tasks such as:
+
+```text
+Implement RAG pipeline.
+```
+
+Break it into concrete units such as:
+
+* ingestion scaffold
+* PDF extraction
+* metadata extraction
+* document validation
+* section detection
+* structure-aware chunking
+* document persistence
+* embedding generation
+* vector indexing
+* lexical indexing
+* retrieval service
+* hybrid fusion
+* reranking
+* answerability
+* grounded generation
+* citation validation
+* evaluation
+* deployment
+
+Every task must be independently testable.
+
+Every task must state enough information for Claude Code to execute it without hidden context.
+
+---
+
+# 40. TASK DEPENDENCY RULES
+
+Task dependencies must be explicit.
+
+Do not create circular dependencies.
+
+Every task should identify:
+
+* prerequisites
+* produced artifacts
+* files affected
+* validation method
+* what becomes possible after completion
+
+Tasks must be ordered so Claude Code can execute them sequentially.
+
+A task may depend on an external/manual step, but the plan must identify it explicitly.
+
+---
+
+# 41. TIME ACCOUNTING
+
+Estimate every implementation task.
+
+Then calculate:
+
+```text
+Phase
+Task Count
+Estimated Time
+Cumulative Time
+Demo Gate
+```
+
+Also calculate:
+
+* Core total
+* MVP total
+* Stretch total
+* critical path
+
+Do not estimate by intuition alone.
+
+Totals must reconcile with the individual task estimates.
+
+---
+
+# 42. MASTER IMPLEMENTATION TRACKER
+
+At the end of the document create:
+
+```markdown
+## Master Implementation Tracker
+```
+
+Include:
+
+### Overall Dashboard
+
+* total tasks
+* completed
+* remaining
+* core
+* MVP
+* stretch
+* current phase
+* next task
+* demo readiness
+
+### Phase Table
+
+Columns:
+
+| Task | Title | Wave | Priority | ETA | Dependencies | Status |
+
+Initial statuses must reflect the actual starting state.
+
+Use:
+
+```text
+⬜ Todo
+🟦 In Progress
+✅ Complete
+⏭️ Skipped
+```
+
+Do not mark future tasks complete.
+
+Because this is a planning task, all unexecuted implementation work must begin as `⬜ Todo`.
+
+---
+
+# 43. FINAL TOP-LEVEL DOCUMENT STRUCTURE
+
+The resulting `implementation_plan.md` should contain approximately these sections:
+
+1. Executive Summary
+2. Assignment Analysis
+3. Explicit vs Inferred Requirements
+4. Product / Project Scope
+5. Functional Requirements
+6. Non-Functional Requirements
+7. Primary User / Evaluator Journey
+8. System Architecture
+9. Component Architecture
+10. Repository / Module Architecture
+11. Database Design
+12. API Design
+13. 3GPP Document Strategy
+14. Ingestion Architecture
+15. RAG Architecture
+16. Retrieval Strategy
+17. Reranking Strategy
+18. Hallucination Prevention
+19. Citation & Evidence Architecture
+20. Confidence & Abstention
+21. Prompt Architecture
+22. Evaluation Architecture
+23. Security
+24. Error Handling
+25. Retry Strategy
+26. Logging & Observability
+27. Testing Strategy
+28. Deployment Architecture
+29. Incremental Implementation Roadmap
+30. Risks & Mitigations
+31. Interview Defensibility
+32. AI Coding Agent Execution Plan
+33. Master Implementation Tracker
+
+Add sections only when they provide real value.
+
+Do not add decorative sections merely to increase document length.
+
+---
+
+# 44. RETRY STRATEGY
+
+Define retry behavior for transient failures.
+
+At minimum consider:
+
+* LLM provider failures
+* rate limits
+* transient database/network failures
+* embedding provider failures
+* reranker failures
+
+For each retryable operation define:
+
+* retryable conditions
+* maximum attempts
+* backoff strategy
+* timeout behavior
+* fallback
+* logging behavior
+* user-visible behavior
+
+Do not retry deterministic failures indefinitely.
+
+---
+
+# 45. QUALITY GATES BEFORE FINALIZING THE PLAN
+
+Before writing the final file, perform a self-review against the following questions.
+
+## Repository
+
+* Did you actually inspect `D:\Academic\mavenir\_chatbot`?
+* Did you inspect existing files before designing the repository?
+* Did you determine whether it is empty?
+
+## Reference
+
+* Did you actually inspect `D:\Academic\webcmd\_hack\docs\implementation\_plan.md`?
+* Does the resulting plan reflect its structural quality without copying its unrelated domain decisions?
+
+## Architecture
+
+* Can another engineer explain the system from this document?
+* Are component responsibilities clear?
+* Are trade-offs documented?
+
+## RAG
+
+* Can Claude Code implement the RAG pipeline without inventing missing pieces?
+* Are retrieval, fusion, reranking, answerability, generation, validation, and abstention clearly defined?
+
+## Hallucination
+
+* Does the system actually reduce unsupported claims through architecture?
+* Or does the plan merely rely on an LLM prompt?
+
+## 3GPP
+
+* Were specification metadata and source locations verified?
+* Are release/version decisions traceable?
+* Is cross-version contamination explicitly prevented?
+
+## Evaluation
+
+* Is the dataset design concrete?
+* Are metrics measurable?
+* Are hallucination and abstention behaviors testable?
+
+## Deployment
+
+* Can the architecture genuinely run on Vercel + Render + Neon?
+* Are production secrets protected?
+* Are frontend/backend boundaries correct?
+
+## Interview
+
+* Can major architecture decisions be defended?
+* Are likely trade-off questions addressed?
+
+## Execution
+
+* Can Claude Code execute tasks sequentially?
+* Does every task include acceptance criteria and testing?
+* Are dependencies explicit?
+
+## Scope
+
+* Is unnecessary complexity excluded?
+* Is the architecture appropriate for a take-home assignment?
+
+## Consistency
+
+Check that:
+
+* database schema matches APIs
+* APIs match frontend needs
+* retrieval metadata matches citations
+* task cards match the architecture
+* task dependencies are coherent
+* task estimates sum correctly
+* tracker matches the actual initial project state
+
+---
+
+# 46. REQUIRED WORKFLOW
+
+Follow this exact sequence.
+
+## STEP 1 — Inspect repository
+
+Inspect:
+
+```text
+D:\Academic\mavenir\_chatbot
+```
+
+Do not design the final repository architecture before doing this.
+
+## STEP 2 — Inspect reference plan
+
+Read:
+
+```text
+D:\Academic\webcmd\_hack\docs\implementation\_plan.md
+```
+
+Extract its reusable structural principles.
+
+## STEP 3 — Analyze assignment context
+
+Separate:
+
+* explicit requirements
+* inferred requirements
+* recommendations
+* assumptions
+
+## STEP 4 — Research and verify
+
+Verify current information needed for:
+
+* 3GPP specifications
+* releases/versions
+* source locations
+* embeddings
+* rerankers
+* provider capabilities
+* PostgreSQL/pgvector
+* Neon
+* Render
+* Vercel
+* relevant libraries
+
+Use authoritative sources where possible.
+
+## STEP 5 — Design architecture
+
+Create:
+
+* system architecture
+* component architecture
+* repository architecture
+* database design
+* API design
+* ingestion architecture
+* retrieval architecture
+* reliability architecture
+* evaluation architecture
+* deployment architecture
+
+## STEP 6 — Design execution roadmap
+
+Create:
+
+* phases
+* dependencies
+* demo gates
+* scope tiers
+* descope ladder
+* task cards
+* implementation estimates
+* critical path
+
+## STEP 7 — Validate internally
+
+Run the quality-gate review described above.
+
+## STEP 8 — Write the final file
+
+Create ONLY:
+
+```text
+D:\Academic\mavenir\_chatbot\implementation_plan.md
+```
+
+The final file must be complete, coherent, internally consistent, and implementation-ready.
+
+---
+
+# 47. FINAL OUTPUT RULES
+
+At the end of this task:
+
+1. `implementation_plan.md` must exist at:
+
+```text
+D:\Academic\mavenir\_chatbot\implementation_plan.md
+```
+
+2. Do not implement the application.
+
+3. Do not create placeholder production files.
+
+4. Do not claim that code works because the plan says it will work.
+
+5. Do not claim performance numbers that have not been measured.
+
+6. Do not claim zero hallucinations.
+
+7. Do not invent 3GPP information.
+
+8. Do not assume current versions/releases without verification.
+
+9. Do not introduce technologies without justification.
+
+10. Do not copy unrelated architecture from the reference plan.
+
+11. Do not produce a generic RAG roadmap.
+
+12. Make the plan sufficiently precise that Claude Code can later execute it task-by-task.
+
+13. The final plan must clearly distinguish:
+
+```text
+Verified facts
+vs
+Inferences
+vs
+Recommendations
+vs
+Assumptions
+```
+
+14. The plan must make this philosophy obvious:
+
+```text
+Reliability > complexity
+Evidence > fluency
+Measurement > claims
+Working deployment > architectural fashion
+```
+
+15. The LLM is not the source of truth.
+
+16. Unsupported answers must abstain.
+
+17. Invalid citations must never reach the user.
+
+18. Release/version metadata must prevent incompatible evidence from being silently mixed.
+
+19. Every major engineering decision must be explainable in a technical interview.
+
+20. Every implementation task must be independently understandable, testable, and executable.
+
+Begin with **repository inspection**, not implementation.

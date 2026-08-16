@@ -1,0 +1,121 @@
+specifications:
+  # =========================================================================
+  # Phase 1: Core 5G/5GC Specs — Release 18 only
+  # Budget: ~487 MB / 512 MB (13,551 chunks est.)
+  # =========================================================================
+
+  # Series 23: Architecture & Procedures (SA2)
+  # - spec_number: "TS 23.501"
+  #   title: "System architecture for the 5G System (5GS); Stage 2"
+  #   release: 18
+  #   series: "23"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/23_series/23.501/"
+  #   expected_version_prefix: "18"
+
+  # - spec_number: "TS 23.502"
+  #   title: "Procedures for the 5G System (5GS); Stage 2"
+  #   release: 18
+  #   series: "23"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/23_series/23.502/"
+  #   expected_version_prefix: "18"
+
+  # - spec_number: "TS 23.503"
+  #   title: "Policy and charging control framework for the 5GS; Stage 2"
+  #   release: 18
+  #   series: "23"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/23_series/23.503/"
+  #   expected_version_prefix: "18"
+
+  # - spec_number: "TS 23.548"
+  #   title: "5G System User Plane Protocols including Edge Computing; Stage 2"
+  #   release: 18
+  #   series: "23"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/23_series/23.548/"
+  #   expected_version_prefix: "18"
+
+  # - spec_number: "TS 23.558"
+  #   title: "Architecture for enabling Edge Applications; Stage 2"
+  #   release: 18
+  #   series: "23"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/23_series/23.558/"
+  #   expected_version_prefix: "18"
+
+  # Series 24: Non-Access Stratum Protocols (CT1)
+  # - spec_number: "TS 24.501"
+  #   title: "Non-Access-Stratum (NAS) protocol for 5G System (5GS); Stage 3"
+  #   release: 18
+  #   series: "24"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/24_series/24.501/"
+  #   expected_version_prefix: "18"
+
+  # - spec_number: "TS 24.502"
+  #   title: "Access to the 3GPP 5G Core Network via non-3GPP access networks; Stage 3"
+  #   release: 18
+  #   series: "24"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/24_series/24.502/"
+  #   expected_version_prefix: "18"
+
+  # - spec_number: "TS 24.526"
+  #   title: "User Equipment (UE) policies for 5GS; Stage 3"
+  #   release: 18
+  #   series: "24"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/24_series/24.526/"
+  #   expected_version_prefix: "18"
+
+  # Series 38: 5G NR Radio & NG-RAN (RAN2/RAN3)
+  # - spec_number: "TS 38.300"
+  #   title: "NR; NR and NG-RAN Overall Description; Stage 2"
+  #   release: 18
+  #   series: "38"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/38_series/38.300/"
+  #   expected_version_prefix: "18"
+
+  # - spec_number: "TS 38.331"
+  #   title: "NR; Radio Resource Control (RRC) protocol specification"
+  #   release: 18
+  #   series: "38"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/38_series/38.331/"
+  #   expected_version_prefix: "18"
+
+  # - spec_number: "TS 38.401"
+  #   title: "NG-RAN; Architecture description"
+  #   release: 18
+  #   series: "38"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/38_series/38.401/"
+  #   expected_version_prefix: "18"
+
+  # Series 29: Service-Based Interfaces / SBI (CT4)
+  # - spec_number: "TS 29.502"
+  #   title: "5G System; Session Management Services (Nsmf); Stage 3"
+  #   release: 18
+  #   series: "29"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/29_series/29.502/"
+  #   expected_version_prefix: "18"
+
+  # - spec_number: "TS 29.503"
+  #   title: "5G System; Unified Data Management Services (Nudm); Stage 3"
+  #   release: 18
+  #   series: "29"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/29_series/29.503/"
+  #   expected_version_prefix: "18"
+
+  - spec_number: "TS 29.510"
+    title: "5G System; Network Function Repository Services (Nnrf); Stage 3"
+    release: 18
+    series: "29"
+    archive_url: "https://www.3gpp.org/ftp/Specs/archive/29_series/29.510/"
+    expected_version_prefix: "18"
+
+  - spec_number: "TS 29.518"
+    title: "5G System; Access and Mobility Management Services (Namf); Stage 3"
+    release: 18
+    series: "29"
+    archive_url: "https://www.3gpp.org/ftp/Specs/archive/29_series/29.518/"
+    expected_version_prefix: "18"
+
+  - spec_number: "TS 29.571"
+    title: "5G System; Common Data Types for Service Based Interfaces; Stage 3"
+    release: 18
+    series: "29"
+    archive_url: "https://www.3gpp.org/ftp/Specs/archive/29_series/29.571/"
+    expected_version_prefix: "18"
