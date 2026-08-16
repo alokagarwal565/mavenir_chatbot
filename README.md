@@ -1,7 +1,7 @@
 # Mavenir 3GPP Standards Intelligence Assistant
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-🚀%20Available-success?style=for-the-badge)](https://3gpp-chatbot.vercel.app/)  
-*(**Note on Demo Performance:** This live instance is deployed on strict free-tier cloud infrastructure. Please expect a **50-second cold start** if the server is sleeping. To prevent Out-Of-Memory crashes on a 512MB RAM constraint, the PyTorch Cross-Encoder is dynamically bypassed, resulting in occasional false-abstentions compared to a full GPU production deployment.)*
+*(**Note on Demo Performance:** This live instance is deployed on strict free-tier cloud infrastructure. Please expect a **50-second cold start** if the server is sleeping. To prevent Out-Of-Memory crashes on a 512MB RAM constraint, the PyTorch Cross-Encoder is dynamically bypassed. **As a result, the quality and effectiveness of answers on this live demo will be noticeably different (higher false-abstention rate) compared to running the exact same architecture locally or in a proper GPU production environment.**)*
 
 A specialized, evidence-first Retrieval-Augmented Generation (RAG) platform engineered to answer complex technical questions regarding 3GPP 5G and 5G-Advanced specifications (Release 18 focus).
 
