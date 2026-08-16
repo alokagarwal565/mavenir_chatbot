@@ -2,11 +2,18 @@ specifications:
   # =========================================================================
   # Horizon 1: Curated Core 5GS Architecture (Series 22-23, 24, 29, 33, 38)
   # Aligned with Section 7.1 Representative Specifications
-  # 23 specs already in DB (commented out below)
-  # 3 specs remaining to ingest (active below)
+  # 25 specs already in DB (commented out below)
+  # 1 specs remaining to ingest (active below)
   # =========================================================================
 
-  # --- ALREADY INGESTED (23 specs in DB) ---
+  # --- ALREADY INGESTED (25 specs in DB) ---
+
+  # - spec_number: "TS 22.261"
+  #   title: "Service requirements for the 5G system"
+  #   release: 18
+  #   series: "22"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/22_series/22.261/"
+  #   expected_version_prefix: "18"
 
   # - spec_number: "TS 23.501"
   #   title: "System architecture for the 5G System (5GS); Stage 2"
@@ -92,6 +99,13 @@ specifications:
   #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/29_series/29.571/"
   #   expected_version_prefix: "18"
 
+  # - spec_number: "TS 33.501"
+  #   title: "Security architecture and procedures for 5G System"
+  #   release: 18
+  #   series: "33"
+  #   archive_url: "https://www.3gpp.org/ftp/Specs/archive/33_series/33.501/"
+  #   expected_version_prefix: "18"
+
   # - spec_number: "TS 33.535"
   #   title: "Authentication and Key Management for Applications (AKMA) based on 3GPP credentials in the 5G System (5GS)"
   #   release: 18
@@ -171,22 +185,6 @@ specifications:
   #   expected_version_prefix: "18"
 
   # --- TO INGEST — ordered by priority per Section 7.1 ---
-
-  # Priority 1: 5GS Security Architecture (auto-converted from .doc via MS Word COM)
-  - spec_number: "TS 33.501"
-    title: "Security architecture and procedures for 5G System"
-    release: 18
-    series: "33"
-    archive_url: "https://www.3gpp.org/ftp/Specs/archive/33_series/33.501/"
-    expected_version_prefix: "18"
-
-  # Priority 2: 5G Service Requirements (auto-converted from .doc via MS Word COM)
-  - spec_number: "TS 22.261"
-    title: "Service requirements for the 5G system"
-    release: 18
-    series: "22"
-    archive_url: "https://www.3gpp.org/ftp/Specs/archive/22_series/22.261/"
-    expected_version_prefix: "18"
 
   # Priority 3: 5GS Roaming Security
   - spec_number: "TS 33.541"

@@ -2,6 +2,7 @@
 
 | Spec Number | Release | Version | AST Storage Path |
 |-------------|---------|---------|------------------|
+| TS 22.261 | 18 | 18.4.0 | s3://storage/ast/18/TS 22.261_18.4.0_ast.json |
 | TS 23.501 | 18 | 18.4.0 | s3://storage/ast/18/TS 23.501_18.4.0_ast.json |
 | TS 23.502 | 18 | 18.4.0 | s3://storage/ast/18/TS 23.502_18.4.0_ast.json |
 | TS 23.503 | 18 | 18.4.0 | s3://storage/ast/18/TS 23.503_18.4.0_ast.json |
@@ -16,6 +17,7 @@
 | TS 29.510 | 18 | 18.4.0 | s3://storage/ast/18/TS 29.510_18.4.0_ast.json |
 | TS 29.518 | 18 | 18.4.0 | s3://storage/ast/18/TS 29.518_18.4.0_ast.json |
 | TS 29.571 | 18 | 18.4.0 | s3://storage/ast/18/TS 29.571_18.4.0_ast.json |
+| TS 33.501 | 18 | 18.4.0 | s3://storage/ast/18/TS 33.501_18.4.0_ast.json |
 | TS 33.535 | 18 | 18.4.0 | s3://storage/ast/18/TS 33.535_18.4.0_ast.json |
 | TS 38.300 | 18 | 18.4.0 | s3://storage/ast/18/TS 38.300_18.4.0_ast.json |
 | TS 38.321 | 18 | 18.4.0 | s3://storage/ast/18/TS 38.321_18.4.0_ast.json |
