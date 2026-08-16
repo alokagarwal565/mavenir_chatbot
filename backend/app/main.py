@@ -8,6 +8,19 @@ load_dotenv(ROOT_DIR / ".env")
 if not os.environ.get("HF_HOME"):
     os.environ["HF_HOME"] = str(ROOT_DIR)
 
+# Force PyTorch and OpenMP to use 1 thread to prevent starving the Uvicorn event loop on Render (0.1 CPU limit)
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
+try:
+    import torch
+    torch.set_num_threads(1)
+except ImportError:
+    pass
+
 import psutil
 from app.logging_config import get_logger
 from contextlib import asynccontextmanager
