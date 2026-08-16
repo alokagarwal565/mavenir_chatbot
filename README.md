@@ -4,6 +4,11 @@ A specialized, evidence-first Retrieval-Augmented Generation (RAG) platform engi
 
 ---
 
+> [!NOTE]
+> **Technical Reviewers:** Please see the [Formal Implementation Plan & Architecture Specification](docs/implementation_plan.md) for a comprehensive engineering breakdown of the RAG architecture, retrieval pipeline, chunking strategies, and hallucination boundary logic.
+
+---
+
 ## 1. Project Overview
 
 The **Mavenir 3GPP Standards Intelligence Assistant** solves the challenge of rapidly navigating, cross-referencing, and synthesizing the massive, highly technical 3GPP corpus. In telecommunications engineering, incorrect parameters (like an invalid timer name or a fabricated Network Function procedure) have severe operational consequences. 
