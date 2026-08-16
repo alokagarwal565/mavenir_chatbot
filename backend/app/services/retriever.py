@@ -23,7 +23,8 @@ class RetrieverService:
         fallback_used = False
 
         # 1. Dense vector search
-        query_vec = self.embedder.embed_query(query)
+        from starlette.concurrency import run_in_threadpool
+        query_vec = await run_in_threadpool(self.embedder.embed_query, query)
         vector_candidates = await vector_search(
             pool=pool,
             query_vector=query_vec,

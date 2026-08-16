@@ -75,7 +75,8 @@ class QueryService:
         # 2. Reranking
         t_rerank_start = time.time()
         if self.reranker and settings.reranker_enabled:
-            reranked = self.reranker.rerank(req.question, candidates, top_k=8)
+            from starlette.concurrency import run_in_threadpool
+            reranked = await run_in_threadpool(self.reranker.rerank, req.question, candidates, 8)
             has_reranker_scores = any(c.reranker_score is not None for c in reranked)
             if has_reranker_scores:
                 reranked = [c for c in reranked if (c.reranker_score or 0.0) >= settings.reranker_floor]
@@ -278,7 +279,8 @@ class QueryService:
         yield StreamEvent(type="status", data={"stage": "reranking", "message": "Ranking evidence..."})
         t_rerank_start = time.time()
         if self.reranker and settings.reranker_enabled:
-            reranked = self.reranker.rerank(effective_query, candidates, top_k=8)
+            from starlette.concurrency import run_in_threadpool
+            reranked = await run_in_threadpool(self.reranker.rerank, effective_query, candidates, 8)
             has_reranker_scores = any(c.reranker_score is not None for c in reranked)
             if has_reranker_scores:
                 reranked = [c for c in reranked if (c.reranker_score or 0.0) >= settings.reranker_floor]
