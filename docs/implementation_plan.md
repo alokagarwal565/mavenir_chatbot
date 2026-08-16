@@ -537,6 +537,7 @@ CREATE TABLE query_logs (
 | **Why not embed the entire 55-series upfront?** | Free-tier cloud PostgreSQL instances enforce a 500 MB storage cap. Ingesting 25 curated Release 18 flagship specs captures 95% of real-world 5GS core/radio queries while consuming only 109.9 MB. |
 | **Why use Reciprocal Rank Fusion (RRF) over raw score addition?** | Cosine similarity scores from dense vectors and BM25/FTS scores operate on non-calibrated distributions. RRF ($k=60$) is scale-invariant and immune to outlier score skewing. |
 | **Why enforce deterministic citation validation over LLM self-checking?** | LLMs exhibit severe self-preference bias when judging their own citations. Deterministic substring grounding and UUID existence checks provide absolute mathematical verification. |
+| **Why use Soft Tag Boosting instead of Hard Layer Pruning?** | In telecom standards, queries often span multiple taxonomy layers. Hard layer pruning causes massive recall drops (false negatives) if a query implies a tag not explicitly mapped by the tagger. Soft boosting mathematically rewards metadata matches without accidentally blinding the LLM to cross-layer answers. |
 
 ---
 
