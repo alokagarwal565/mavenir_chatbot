@@ -1,5 +1,7 @@
 # Mavenir 3GPP Standards Intelligence Assistant
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-🚀%20Available-success?style=for-the-badge)](https://3gpp-chatbot.vercel.app/)
+
 A specialized, evidence-first Retrieval-Augmented Generation (RAG) platform engineered to answer complex technical questions regarding 3GPP 5G and 5G-Advanced specifications (Release 18 focus).
 
 ---
