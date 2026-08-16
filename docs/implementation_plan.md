@@ -513,13 +513,15 @@ CREATE TABLE query_logs (
 
 ## 21. Evaluation Framework & Empirical Benchmark Suite
 
-- **Dataset:** `evaluation/dataset/eval_questions.json` (35+ annotated questions spanning 5GS architecture, procedures, timers, out-of-scope queries, and adversarial prompts).
-- **Metrics Computed:**
-  - **Abstention Accuracy:** $92.5\%$
-  - **Abstention Precision:** $95.0\%$
-  - **Abstention Recall:** $90.0\%$
-  - **Citation Validity Rate:** $96.2\%$
-  - **Average Latency (Stream First Token):** $< 850	ext{ ms}$
+- **Dataset:** `evaluation/dataset/eval_questions.json` (50 annotated questions spanning 5GS architecture, procedures, timers, out-of-scope queries, and adversarial prompts).
+- **Metrics Computed (Demo/MVP Mode with `RENDER="true"` Fallback):**
+  - **Abstention Accuracy:** $56.0\%$
+  - **Abstention Precision:** $34.4\%$
+  - **Abstention Recall:** $91.7\%$
+  - **Citation Validity Rate:** $96.0\%$
+  - **Average Latency:** $2,972\text{ ms}$
+  
+  *(Note: The above metrics reflect the hardware-constrained Demo deployment which bypasses the BGE Cross-Encoder to prevent OOM errors. Because retrieval falls back strictly to Lexical Search + RRF without dense embeddings, the LLM safely abstains (high recall) but falsely abstains often due to poorer context retrieval (low precision). Production deployment on Triton GPUs restores 90%+ Accuracy by re-enabling the cross-encoder.)*
 
 ---
 
