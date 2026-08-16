@@ -88,9 +88,9 @@ async def lexical_search(
             c.text,
             COALESCE(c.token_count, 0) AS token_count,
             c.tags,
-            ts_rank_cd(c.fts_vector, plainto_tsquery('english', $1)) AS lexical_score
+            ts_rank_cd(c.fts_vector, websearch_to_tsquery('english', $1)) AS lexical_score
         FROM document_chunks c
-        WHERE c.fts_vector @@ plainto_tsquery('english', $1)
+        WHERE c.fts_vector @@ websearch_to_tsquery('english', $1)
           AND ($2::text IS NULL OR c.spec_number = $2)
           AND ($3::int IS NULL OR c.release_number = $3)
         ORDER BY lexical_score DESC

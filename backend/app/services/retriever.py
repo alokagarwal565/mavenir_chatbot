@@ -51,7 +51,7 @@ class RetrieverService:
             terms = [t for t in re.findall(r'\w+', query.lower()) if t not in STOPWORDS and len(t) > 2]
             if terms:
                 fallback_used = True
-                fallback_query = " | ".join(terms[:4])
+                fallback_query = " OR ".join(terms[:5])
                 logger.info("keyword_fallback_triggered", query=fallback_query)
                 lexical_candidates = await lexical_search(
                     pool=pool,
