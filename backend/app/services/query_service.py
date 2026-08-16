@@ -5,6 +5,7 @@ import re
 import tiktoken
 from app.logging_config import get_logger
 from typing import Optional, List
+from starlette.concurrency import run_in_threadpool
 
 from app.config import settings
 from app.models.schemas import QueryRequest, QueryResponse, DebugInfo, ScoredChunkDebug, Claim, StreamEvent, ConversationTurn
@@ -75,7 +76,6 @@ class QueryService:
         # 2. Reranking
         t_rerank_start = time.time()
         if self.reranker and settings.reranker_enabled:
-            from starlette.concurrency import run_in_threadpool
             reranked = await run_in_threadpool(self.reranker.rerank, req.question, candidates, 8)
             has_reranker_scores = any(c.reranker_score is not None for c in reranked)
             if has_reranker_scores:
@@ -279,7 +279,6 @@ class QueryService:
         yield StreamEvent(type="status", data={"stage": "reranking", "message": "Ranking evidence..."})
         t_rerank_start = time.time()
         if self.reranker and settings.reranker_enabled:
-            from starlette.concurrency import run_in_threadpool
             reranked = await run_in_threadpool(self.reranker.rerank, effective_query, candidates, 8)
             has_reranker_scores = any(c.reranker_score is not None for c in reranked)
             if has_reranker_scores:

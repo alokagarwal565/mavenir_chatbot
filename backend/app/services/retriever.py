@@ -4,6 +4,7 @@ from app.logging_config import get_logger
 from typing import List, Optional, Tuple
 from app.providers.base import ScoredChunk, EmbeddingProvider
 from app.db.queries import vector_search, lexical_search
+from starlette.concurrency import run_in_threadpool
 
 logger = get_logger(__name__)
 
@@ -23,7 +24,6 @@ class RetrieverService:
         fallback_used = False
 
         # 1. Dense vector search
-        from starlette.concurrency import run_in_threadpool
         query_vec = await run_in_threadpool(self.embedder.embed_query, query)
         vector_candidates = await vector_search(
             pool=pool,
