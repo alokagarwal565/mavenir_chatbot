@@ -55,6 +55,7 @@ data/storage/*
 logs.txt
 deploy.txt
 scratch/
+evaluation/results/
 
 # Agent and specific caches
 .agents/
