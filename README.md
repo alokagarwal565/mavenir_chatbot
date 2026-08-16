@@ -252,18 +252,3 @@ Transitioning the current implementation to the production target requires:
 2. **Distributed Ingestion:** Replacing the synchronous CLI pipeline with an asynchronous AWS SQS + Celery worker pool for daily delta ingestion.
 3. **Session Persistence:** Replacing the React in-memory state with a Redis cluster to support persistent user sessions and audit logging.
 
-## 20. Interview / Engineering Highlights
-
-* **Defensive Engineering:** Anticipating cloud database limits (`statement_cache_size=0` for PgBouncer) and RAM OOM kills (`RENDER=true` fallback strategy).
-* **Deterministic Validation:** The RAG pipeline does not blindly trust the LLM. The 8-point `CitationValidator` mathematically verifies the LLM's claims against the retrieved chunks before streaming to the client.
-* **Tag-Boosted RRF:** Implementing a custom Reciprocal Rank Fusion algorithm that mathematically rewards chunks possessing matching metadata tags (e.g., `nf:amf`), solving the vocabulary mismatch problem in telecom standards.
-* **Cascade Reliability:** Implementing an LLM provider fallback cascade that gracefully degrades to faster/cheaper models on timeouts or 429 errors.
-
-## 21. Demo Flow
-
-To evaluate the system, follow this sequence:
-1. **Ask a standards question:** *"What are the key functions of the AMF in 5GS?"* (Observe the grounded answer, formatting, and inline citations).
-2. **Show evidence:** Click the `[1]` citation badge to open the source card and verify the exact 3GPP text.
-3. **Conversational follow-up:** *"What timers does it use?"* (Observe the ephemeral context manager successfully resolving "it" to the AMF).
-4. **Unanswerable question:** *"What are the internal proprietary AMF parameters used by Mavenir?"* (Observe the automated abstention).
-5. **Scope handling:** *"Give me a recipe for chocolate cake."* (Observe the instant `QueryRouter` boundary enforcement).
