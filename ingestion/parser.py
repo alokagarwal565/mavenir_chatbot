@@ -4,6 +4,26 @@ from pathlib import Path
 from typing import List
 from ingestion.cleaner import clean_text
 
+def _doc_to_docx(doc_path: Path) -> Path:
+    """
+    Converts a legacy .doc file to .docx using Microsoft Word via COM (pywin32).
+    Returns the path to the converted .docx file.
+    Requires Microsoft Word to be installed on Windows.
+    """
+    import win32com.client
+    docx_path = doc_path.with_suffix(".docx")
+    if docx_path.exists():
+        return docx_path
+    word = win32com.client.Dispatch("Word.Application")
+    word.Visible = False
+    try:
+        d = word.Documents.Open(str(doc_path.absolute()))
+        d.SaveAs2(str(docx_path.absolute()), FileFormat=16)  # 16 = wdFormatXMLDocument (.docx)
+        d.Close()
+    finally:
+        word.Quit()
+    return docx_path
+
 @dataclass
 class ParsedPage:
     page_number: int
@@ -85,6 +105,8 @@ def parse_document(doc_path: Path) -> List[ParsedPage]:
     Dispatcher to parse either .docx or .pdf.
     """
     ext = doc_path.suffix.lower()
+    if ext == ".doc":
+        doc_path = _doc_to_docx(doc_path)  # convert to .docx via MS Word COM
     if ext in [".docx", ".doc"]:
         return parse_docx(doc_path)
     elif ext == ".pdf":

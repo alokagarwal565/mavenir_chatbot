@@ -156,8 +156,8 @@ specifications:
   # --- TO INGEST — ordered by priority per Section 7.1 ---
 
   # Priority 1: 5GS Security Architecture — one of the original 5 flagship specs
-  # NOTE: TS 33.501 Rel-18 is distributed as a .doc (not .docx) on the 3GPP FTP.
-  # python-docx cannot open legacy .doc files. Skip if pipeline crashes; retry with LibreOffice conversion.
+  # NOTE: TS 33.501 Rel-18 is distributed as a .doc (legacy Word 97-2003) on the 3GPP FTP.
+  # The pipeline will auto-convert it to .docx via MS Word COM (pywin32) before parsing.
   - spec_number: "TS 33.501"
     title: "Security architecture and procedures for 5G System"
     release: 18
