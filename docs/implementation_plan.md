@@ -435,6 +435,8 @@ The `QueryRouter` executes strict regex classification before touching retrieval
 
 ## 19. Database Design & Complete PostgreSQL Schema
 
+*(Source reference: [`backend/app/db/schema.sql`](../backend/app/db/schema.sql))*
+
 ```sql
 -- ============================================================================
 -- 3GPP STANDARDS INTELLIGENCE KNOWLEDGE PIPELINE SCHEMA
