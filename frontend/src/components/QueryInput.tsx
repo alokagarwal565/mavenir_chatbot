@@ -13,7 +13,11 @@ interface Props {
 const SPEC_OPTIONS: Option[] = [
   { value: 'ALL', label: 'All Core 5GS Specs', description: 'Complete 5G Suite (Rel-18)', minRelease: 18 },
   
+  // Series 22: Service requirements
+  { value: 'TS 22.261', label: 'TS 22.261', description: 'Service requirements for the 5G system', minRelease: 18 },
+
   // Series 23: Architecture & Procedures
+  { value: 'TS 23.401', label: 'TS 23.401', description: 'GPRS enhancements for E-UTRAN', minRelease: 18 },
   { value: 'TS 23.501', label: 'TS 23.501', description: '5GS System Architecture', minRelease: 18 },
   { value: 'TS 23.502', label: 'TS 23.502', description: '5GS Procedures & Flows', minRelease: 18 },
   { value: 'TS 23.503', label: 'TS 23.503', description: 'Policy & QoS Framework', minRelease: 18 },
@@ -21,18 +25,16 @@ const SPEC_OPTIONS: Option[] = [
   { value: 'TS 23.558', label: 'TS 23.558', description: 'Edge App Enablement', minRelease: 18 },
 
   // Series 24: Non-Access Stratum
+  { value: 'TS 24.301', label: 'TS 24.301', description: 'NAS protocol for EPS', minRelease: 18 },
   { value: 'TS 24.501', label: 'TS 24.501', description: '5GMM & 5GSM NAS Protocol', minRelease: 18 },
   { value: 'TS 24.502', label: 'TS 24.502', description: 'Non-3GPP Access to 5GC', minRelease: 18 },
   { value: 'TS 24.526', label: 'TS 24.526', description: 'URSP Rules & Policy', minRelease: 18 },
 
-  // Series 38: 5G NR Radio
-  { value: 'TS 38.300', label: 'TS 38.300', description: 'NR Overall Description', minRelease: 18 },
-  { value: 'TS 38.321', label: 'TS 38.321', description: 'NR MAC Protocol', minRelease: 18 },
-  { value: 'TS 38.322', label: 'TS 38.322', description: 'NR RLC Protocol', minRelease: 18 },
-  { value: 'TS 38.323', label: 'TS 38.323', description: 'NR PDCP Protocol', minRelease: 18 },
-  { value: 'TS 38.331', label: 'TS 38.331', description: 'NR RRC Protocol', minRelease: 18 },
-  { value: 'TS 38.401', label: 'TS 38.401', description: 'NG-RAN Architecture', minRelease: 18 },
-  { value: 'TS 38.413', label: 'TS 38.413', description: 'NGAP Protocol', minRelease: 18 },
+  // Series 26: Codecs
+  { value: 'TS 26.501', label: 'TS 26.501', description: '5G Media Streaming (5GMS)', minRelease: 18 },
+
+  // Series 28: Management and orchestration
+  { value: 'TS 28.531', label: 'TS 28.531', description: '5G Network Slicing Provisioning', minRelease: 18 },
 
   // Series 29: Service-Based Interfaces (SBI)
   { value: 'TS 29.500', label: 'TS 29.500', description: 'SBA Realization', minRelease: 18 },
@@ -43,6 +45,31 @@ const SPEC_OPTIONS: Option[] = [
   { value: 'TS 29.512', label: 'TS 29.512', description: 'Npcf Policy Control', minRelease: 18 },
   { value: 'TS 29.518', label: 'TS 29.518', description: 'Namf AMF Services', minRelease: 18 },
   { value: 'TS 29.571', label: 'TS 29.571', description: 'Common Data Types', minRelease: 18 },
+
+  // Series 31: Subscriber Identity Module
+  { value: 'TS 31.102', label: 'TS 31.102', description: 'Characteristics of the USIM application', minRelease: 18 },
+
+  // Series 32: Charging management
+  { value: 'TS 32.291', label: 'TS 32.291', description: '5G System Charging', minRelease: 18 },
+
+  // Series 33: Security
+  { value: 'TS 33.501', label: 'TS 33.501', description: '5G System Security architecture', minRelease: 18 },
+  { value: 'TS 33.535', label: 'TS 33.535', description: 'AKMA', minRelease: 18 },
+
+  // Series 37: Multiple Radio Access Technology
+  { value: 'TS 37.324', label: 'TS 37.324', description: 'SDAP Protocol', minRelease: 18 },
+  { value: 'TS 37.340', label: 'TS 37.340', description: 'NR Multi-connectivity', minRelease: 18 },
+
+  // Series 38: 5G NR Radio
+  { value: 'TS 38.300', label: 'TS 38.300', description: 'NR Overall Description', minRelease: 18 },
+  { value: 'TS 38.321', label: 'TS 38.321', description: 'NR MAC Protocol', minRelease: 18 },
+  { value: 'TS 38.322', label: 'TS 38.322', description: 'NR RLC Protocol', minRelease: 18 },
+  { value: 'TS 38.323', label: 'TS 38.323', description: 'NR PDCP Protocol', minRelease: 18 },
+  { value: 'TS 38.331', label: 'TS 38.331', description: 'NR RRC Protocol', minRelease: 18 },
+  { value: 'TS 38.401', label: 'TS 38.401', description: 'NG-RAN Architecture', minRelease: 18 },
+  { value: 'TS 38.413', label: 'TS 38.413', description: 'NGAP Protocol', minRelease: 18 },
+  { value: 'TS 38.423', label: 'TS 38.423', description: 'XnAP Protocol', minRelease: 18 },
+  { value: 'TS 38.473', label: 'TS 38.473', description: 'F1AP Protocol', minRelease: 18 },
 ];
 
 const SAMPLE_QUERIES = [
