@@ -91,7 +91,7 @@ graph TD
 
 ## 6. Document Ingestion Pipeline
 
-Currently ingests **25 flagship 3GPP specifications** (18,054 chunks) focused on 5GS Release 18 Architecture, Procedures, Security, and NR RRC/NGAP.
+Currently ingests **36 flagship 3GPP specifications** (23,245 chunks) focused on 5GS Release 18 Architecture, Procedures, Security, and NR RRC/NGAP.
 
 ```text
 3GPP FTP Source
@@ -253,7 +253,7 @@ The project includes an empirical benchmark suite (`evaluation/`) evaluating 50 
 
 ## 18. Limitations
 
-* **Corpus Size constraint:** Only 25 priority specs are ingested (109.9 MB) to respect the 500 MB Supabase free tier. It does not possess knowledge of all 4,500+ historical 3GPP documents.
+* **Corpus Size constraint:** Only 36 priority specs are ingested (137.8 MB) to respect the 500 MB Supabase free tier. It does not possess knowledge of all 4,500+ historical 3GPP documents.
 * **Render RAM limitations:** The demo deployment cannot run BGE rerankers locally due to the 512 MB hard cap, slightly reducing semantic retrieval precision compared to a local GPU run.
 * **Table Complexity:** While Markdown table extraction is robust, highly nested or spanning tables from 3GPP PDFs occasionally suffer from structural flattening.
 

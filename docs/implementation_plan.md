@@ -4,7 +4,7 @@
 > **Repository:** `mavenir_chatbot`  
 > **Status:** Production-Ready System Specification & Audited Implementation Plan  
 > **Active Target Release:** 3GPP 5G/5GS Release 18 (with multi-release filtering support)  
-> **Current Ingested Corpus:** 25 Flagship 3GPP Specifications (18,054 structure-aware chunks, 109.9 MB DB footprint)  
+> **Current Ingested Corpus:** 36 Flagship 3GPP Specifications (23,245 structure-aware chunks, 137.8 MB DB footprint)  
 > **Primary Technology Stack:** React 18 + Vite + TypeScript (Frontend on Vercel) | Python 3.12 + FastAPI + PyTorch/BGE (Backend on Render) | Supabase / Neon PostgreSQL 16 + pgvector + FTS GIN (Cloud DB) | Google Gemini Cascade (Primary LLM)
 
 ---
@@ -65,7 +65,7 @@ Based on a direct audit of the active codebase, configurations, and database con
 | **Frontend** | React 18 + Vite + TypeScript SPA. Dark mode glassmorphism UI, real-time Server-Sent Events (SSE) streaming with live status bar, expandable citation cards, interactive Mermaid.js diagram viewer, diagnostic telemetry panel, suggested query chips, and release/spec dropdown filtering. | `frontend/src/` |
 | **Backend** | Python 3.12 + FastAPI asynchronous service with asyncpg connection pooling, strict Pydantic v2 schemas, streaming response endpoints, structured JSON logging, and threadpool offloading. | `backend/app/` |
 | **Cloud Database** | Supabase PostgreSQL 16 with `pgvector` and Full-Text Search (`tsvector`/GIN). `document_chunks` table holds full chunk text, metadata, FTS tsvectors, and taxonomy tags. | `backend/app/db/schema.sql`, `backend/app/db/queries.py` |
-| **Ingested Corpus** | **25 Ingested 3GPP Specifications** (Release 18) across Core (Series 22, 23, 24, 29, 33) and Radio (Series 38). Totaling **18,054 structure-aware chunks** consuming **109.9 MB** of DB storage (well within the 400 MB safe limit). | `docs/ingested_specs.md`, `ingestion/specs_config.yaml` |
+| **Ingested Corpus** | **36 Ingested 3GPP Specifications** (Release 18) across Core (Series 22, 23, 24, 26, 29, 31, 32, 33) and Radio (Series 37, 38). Totaling **23,245 structure-aware chunks** consuming **137.8 MB** of DB storage (well within the 400 MB safe limit). | `docs/ingested_specs.md`, `ingestion/specs_config.yaml` |
 | **Ingestion Pipeline** | Automated FTP archive discovery, PyMuPDF4LLM PDF parser, `python-docx` parser, and Windows COM `pywin32` automated `.doc` $	o$ `.docx` conversion for legacy Word 97 specs (`TS 33.501`, `TS 22.261`). | `ingestion/` |
 | **Embedding Engine** | `BAAI/bge-m3` (1024-dimensional dense vectors). Self-hosted on CPU/GPU locally; on Render free tier, falls back to high-speed PostgreSQL FTS to prevent 512MB RAM OOM. | `backend/app/providers/bge_provider.py` |
 | **Reranker** | `BAAI/bge-reranker-v2-m3` cross-encoder. Joint query-chunk attention top-8 selection with floor score threshold (0.15). | `backend/app/providers/bge_provider.py` |
@@ -101,7 +101,7 @@ To maintain complete transparency for engineers, interviewers, and evaluators, t
 | **Database** | Supabase Cloud PostgreSQL 16 | Supabase Cloud PostgreSQL 16 (pgvector + FTS) | AWS Aurora PostgreSQL (pgvector + Read Replicas) |
 | **Embeddings** | Local `BAAI/bge-m3` on CPU/GPU | PostgreSQL FTS + GIN (OOM Guard on Render Free) | Dedicated Triton Inference Server / TEI (BGE-M3 on A10G) |
 | **Reranking** | Local `bge-reranker-v2-m3` on CPU | Tag-Boosted RRF ($k=60$) on Render Free Tier | Dedicated GPU Cross-Encoder Microservice |
-| **Corpus Scope** | 25 Flagship 5GS Specs (18,054 chunks) | 25 Flagship 5GS Specs (Rel-18) | 4,500+ Specifications across all 55 Series (Rel 1999–20) |
+| **Corpus Scope** | 36 Flagship 5GS Specs (23,245 chunks) | 36 Flagship 5GS Specs (Rel-18) | 4,500+ Specifications across all 55 Series (Rel 1999–20) |
 | **LLM Provider** | Gemini Flash Cascade (4 rotated keys) | Gemini Flash Cascade (4 rotated keys) | Enterprise Gemini 1.5 Pro / Anthropic Claude 3.5 Sonnet |
 | **Conversation State** | In-Memory Ephemeral React State | In-Memory Ephemeral React State | Redis Ephemeral Session Cache with TTL (30 min) |
 
@@ -114,7 +114,7 @@ To maintain complete transparency for engineers, interviewers, and evaluators, t
 | **Legacy .doc Ingestion** | Skip `.doc` files or require headless LibreOffice daemon. | Automated `pywin32` MS Word COM conversion in `parser.py`. | LibreOffice was not installed on the developer environment, but Microsoft Word was available. Word COM converts `.doc` $	o$ `.docx` silently and losslessly. | Containerized headless LibreOffice daemon in Docker. |
 | **Render RAM Defense (Embeddings)** | Run PyTorch `bge-m3` in Render worker process. | Skip heavy PyTorch load when `RENDER=true`; use native PostgreSQL FTS + GIN lexical search. | Render Free Tier enforces a hard 512MB RAM limit. Loading `bge-m3` (2.2GB) causes instant OOM termination (`SIGKILL`). | Dedicated GPU microservice with remote REST embedding endpoint. |
 | **Corpus Versioning** | Hardcoded `i40.zip` version code for all Release 18 specs. | Dynamic HTML index scraping in `downloader.py` to auto-discover exact latest version (`i00`, `i20`, `i70`, `id0`, etc.). | 3GPP working groups do not publish identical sub-versions across all specs. Hardcoded `i40` caused 403 Forbidden errors on specs published at `i00` or `i20`. | Automated daily 3GPP FTP crawler with hash-based delta ingestion. |
-| **Database Size Management** | Store full 55-series historical corpus on free tier. | Cap active ingestion at 400 MB (leaving 100 MB buffer on Supabase's 500 MB limit); ingested 25 priority specs. | Supabase/Neon free tiers enforce a 500 MB storage cap. Ingesting all releases would exceed storage limits. | AWS Aurora / Neon Paid Tier with tiered cold storage in S3. |
+| **Database Size Management** | Store full 55-series historical corpus on free tier. | Cap active ingestion at 400 MB (leaving 100 MB buffer on Supabase's 500 MB limit); ingested 36 priority specs. | Supabase/Neon free tiers enforce a 500 MB storage cap. Ingesting all releases would exceed storage limits. | AWS Aurora / Neon Paid Tier with tiered cold storage in S3. |
 | **Database Prepared Statements** | Default asyncpg prepared statement cache. | Set `statement_cache_size=0` on pool creation. | Supabase uses PgBouncer in transaction pooling mode, which throws `DuplicatePreparedStatementError` if client-side statement caching is enabled. | Direct session connection to Aurora or PgBouncer in session mode. |
 | **Conversation Context** | Store multi-turn chat sessions in PostgreSQL tables. | Ephemeral client-side history with sliding 6-turn trimmer (`trim_history`). | Reduces database write pressure and guarantees zero user data persistence for privacy. | Redis cluster with configurable session TTL and optional user consent storage. |
 
@@ -166,7 +166,7 @@ To maintain complete transparency for engineers, interviewers, and evaluators, t
 │ • 8-Point Deterministic Citation Validation Gate                                                │
 │ • Automated Answerability Assessment & Abstention Classifier (Threshold 0.25)                   │
 │ • Server-Sent Events (SSE) Real-Time Streaming UI                                               │
-│ • 25 Flagship 3GPP Specifications (18,054 chunks)                                               │
+│ • 36 Flagship 3GPP Specifications (23,245 chunks)                                               │
 ├─────────────────────────────────────────────────────────────────────────────────────────────────┤
 │ MVP ENHANCEMENTS (Implemented & Verified)                                                       │
 │ • Ephemeral Multi-Turn Context Trimmer (6 turns, token budget)                                  │
@@ -323,7 +323,7 @@ The `QueryRouter` executes strict regex classification before touching retrieval
 
 ## 13. 3GPP Document Strategy & Ingestion Pipeline
 
-### Current Ingested Corpus (25 Specifications / Release 18)
+### Current Ingested Corpus (36 Specifications / Release 18)
 
 | Spec Number | Title | Chunks | Pages | Size in DB |
 | :--- | :--- | :---: | :---: | :---: |
@@ -352,7 +352,7 @@ The `QueryRouter` executes strict regex classification before touching retrieval
 | **TS 38.413** | NG-RAN NG Application Protocol (NGAP) | 885 | 453 | 3.3 MB |
 | **TS 38.423** | NG-RAN Xn application protocol (XnAP) | 938 | 486 | 2.8 MB |
 | **TS 38.473** | NG-RAN F1 application protocol (F1AP) | 1,087 | 561 | 3.1 MB |
-| **TOTAL** | **25 Specifications (Release 18 Complete Flagship Suite)** | **18,054** | **10,660** | **109.9 MB** |
+| **TOTAL** | **36 Specifications (Release 18 Complete Flagship Suite)** | **23,245** | **--** | **137.8 MB** |
 
 ---
 
@@ -536,7 +536,7 @@ CREATE TABLE query_logs (
 
 | Question | Technical Defense |
 | :--- | :--- |
-| **Why not embed the entire 55-series upfront?** | Free-tier cloud PostgreSQL instances enforce a 500 MB storage cap. Ingesting 25 curated Release 18 flagship specs captures 95% of real-world 5GS core/radio queries while consuming only 109.9 MB. |
+| **Why not embed the entire 55-series upfront?** | Free-tier cloud PostgreSQL instances enforce a 500 MB storage cap. Ingesting 36 curated Release 18 flagship specs captures 95% of real-world 5GS core/radio queries while consuming only 137.8 MB. |
 | **Why use Reciprocal Rank Fusion (RRF) over raw score addition?** | Cosine similarity scores from dense vectors and BM25/FTS scores operate on non-calibrated distributions. RRF ($k=60$) is scale-invariant and immune to outlier score skewing. |
 | **Why enforce deterministic citation validation over LLM self-checking?** | LLMs exhibit severe self-preference bias when judging their own citations. Deterministic substring grounding and UUID existence checks provide absolute mathematical verification. |
 | **Why use Soft Tag Boosting instead of Hard Layer Pruning?** | In telecom standards, queries often span multiple taxonomy layers. Hard layer pruning causes massive recall drops (false negatives) if a query implies a tag not explicitly mapped by the tagger. Soft boosting mathematically rewards metadata matches without accidentally blinding the LLM to cross-layer answers. |
