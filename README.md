@@ -91,7 +91,8 @@ graph TD
 
 ## 6. Document Ingestion Pipeline
 
-Currently ingests **36 flagship 3GPP specifications** (23,245 chunks) focused on 5GS Release 18 Architecture, Procedures, Security, and NR RRC/NGAP.
+Currently ingests **36 flagship 3GPP specifications** (23,245 chunks) focused on 5GS Release 18 Architecture, Procedures, Security, and NR RRC/NGAP.  
+*(See the [full list of ingested specifications](docs/ingested_specs.md))*
 
 ```text
 3GPP FTP Source
